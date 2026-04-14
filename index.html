@@ -276,6 +276,9 @@ body {
 .nav-tab-btn:hover { color: var(--text-1); background: var(--bg-hover); }
 .nav-tab-btn.active { color: var(--accent-light); background: var(--accent-bg); }
 
+/* Enforce minimum width when expanded so all tab icons stay visible */
+#navigator:not(.collapsed) { min-width: 220px; }
+
 /* Collapsed navigator */
 #navigator.collapsed .nav-content,
 #navigator.collapsed .project-selector { display: none; }
@@ -759,27 +762,73 @@ body {
 
 /* Welcome */
 .welcome-wrap {
-  padding: 40px;
-  max-width: 600px;
+  padding: 40px 44px;
+  max-width: 680px;
   margin: 0 auto;
   overflow-y: auto;
   height: 100%;
 }
-.welcome-title { font-size: 20px; font-weight: 700; color: var(--text-1); margin-bottom: 6px; }
-.welcome-sub { color: var(--text-3); font-size: 12px; margin-bottom: 28px; }
-.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+.welcome-hero { margin-bottom: 36px; }
+.welcome-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.welcome-logo-mark {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.welcome-wordmark { font-size: 18px; font-weight: 700; color: var(--text-1); letter-spacing: -0.01em; }
+.welcome-title { font-size: 22px; font-weight: 700; color: var(--text-1); margin-bottom: 8px; line-height: 1.3; }
+.welcome-sub { color: var(--text-3); font-size: 13px; line-height: 1.6; max-width: 480px; }
+
+/* Feature grid */
+.feat-section-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 12px;
+}
+.feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+.feat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.feat-card:hover { border-color: var(--accent); background: var(--accent-bg); }
+.feat-card-top { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.feat-card-icon {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.feat-card-name { font-weight: 600; font-size: 12px; color: var(--text-1); }
+.feat-card-desc { font-size: 11px; color: var(--text-3); line-height: 1.55; }
+.feat-card-tag {
+  display: inline-flex; align-items: center;
+  margin-top: 10px; padding: 2px 7px;
+  border-radius: 20px; font-size: 9px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  background: var(--bg-elevated); color: var(--text-3);
+  border: 1px solid var(--border);
+}
+
+/* Quick actions */
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 32px; }
 .qa-card {
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 16px;
+  padding: 14px 16px;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
+  display: flex; align-items: center; gap: 10px;
 }
 .qa-card:hover { border-color: var(--accent); background: var(--accent-bg); }
-.qa-ico { font-size: 20px; margin-bottom: 8px; }
+.qa-ico { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: var(--accent-bg); }
+.qa-ico svg { width: 14px; height: 14px; color: var(--accent); }
+.qa-text { display: flex; flex-direction: column; gap: 2px; }
 .qa-title { font-weight: 600; font-size: 12px; color: var(--text-1); }
-.qa-sub { font-size: 10px; color: var(--text-3); margin-top: 3px; }
+.qa-sub { font-size: 10px; color: var(--text-3); }
 
 .recent-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); margin-bottom: 10px; }
 .recent-rows { display: flex; flex-direction: column; gap: 6px; }
@@ -1371,21 +1420,38 @@ body {
   padding: 7px 10px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  display: none;
+  position: relative;
 }
+.chat-search.open { display: block; }
 .chat-search-input {
   width: 100%;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   color: var(--text-1);
-  padding: 5px 9px;
+  padding: 5px 28px 5px 9px;
   font-size: 11px;
   font-family: 'Satoshi', 'Inter', sans-serif;
   outline: none;
   transition: border-color 0.12s;
+  box-sizing: border-box;
 }
 .chat-search-input:focus { border-color: var(--accent); }
 .chat-search-input::placeholder { color: var(--text-3); }
+.chat-search-clear {
+  position: absolute;
+  right: 16px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: var(--text-3); font-size: 14px;
+  cursor: pointer; padding: 2px 4px;
+  line-height: 1;
+  display: none;
+}
+.chat-search-clear.visible { display: block; }
+.chat-search-clear:hover { color: var(--text-1); }
+.cl-btn.search-active { background: var(--accent-bg); color: var(--accent-light); }
 
 .chat-list { flex: 1; overflow-y: auto; }
 
@@ -1847,11 +1913,13 @@ html.light .chat-list-pill-4 { background: #c9253518; }
         <button class="cl-btn" title="Work" onclick="switchChatList(this,'work')">💼</button>
         <button class="cl-btn" title="Research" onclick="switchChatList(this,'research')">🔬</button>
         <div class="cl-spacer"></div>
+        <button class="cl-btn" id="chat-search-btn" title="Search threads" onclick="toggleChatSearch()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="6.5" cy="6.5" r="4"/><path d="M10 10L14 14"/></svg></button>
         <button class="cl-btn" title="New Chat" onclick="openNewChat()">+</button>
       </div>
 
-      <div class="chat-search">
-        <input class="chat-search-input" placeholder="Search chats…" oninput="filterChats(this.value)">
+      <div class="chat-search" id="chat-search-bar">
+        <input class="chat-search-input" id="chat-search-input" placeholder="Search all threads…" oninput="filterChats(this.value)">
+        <button class="chat-search-clear" id="chat-search-clear" onclick="clearChatSearch()" title="Clear search">×</button>
       </div>
 
       <div class="chat-list" id="chat-list"></div>
@@ -2357,32 +2425,126 @@ function renderContent() {
 // ═══════════════════════════════════════════════════════════
 
 function buildHome() {
-  const now = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  const logoSvg = `<svg width="36" height="36" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="nh-clip-hero"><rect x="0" y="0" transform="scale(0.14648,0.14648)" width="2048" height="2048" fill="none"/></clipPath></defs><g clip-path="url(#nh-clip-hero)" fill="none" fill-rule="nonzero"><path d="M0,0h300v300h-300z" fill="#3dc98c"/><path d="M300,0.50168v148.07595l-102.31641,-0.00146h-32.93555l-10.37988,-0.00293c-1.69189,0 -4.24219,-0.07031 -5.87549,0.05713c-0.86426,-0.62109 -2.87607,-2.73003 -3.71616,-3.57686l-6.31846,-6.34175l-24.06548,-24.06328l-78.00571,-78.01201l-24.20067,-24.192l-7.48153,-7.48793c-1.36991,-1.37697 -3.08597,-3.20169 -4.51967,-4.44671z" fill="#595959"/><path d="M300,148.57764v151.42236h-0.38672c-0.39258,-0.54346 -2.35254,-2.42871 -2.90332,-2.97656l-6.36621,-6.34277l-23.68945,-23.729l-80.50488,-80.58398l-25.27588,-25.25098l-7.88379,-7.875c-1.29932,-1.29785 -3.375,-3.2666 -4.49707,-4.61133c1.6333,-0.12744 4.18359,-0.05713 5.87549,-0.05713l10.37988,0.00293h32.93555z" fill="#76919a"/></g></svg>`;
+
   return `<div class="welcome-wrap">
-    <div class="welcome-title">Good morning ☀️</div>
-    <div class="welcome-sub">Work Q2 &nbsp;·&nbsp; ${now}</div>
+
+    <!-- Hero -->
+    <div class="welcome-hero">
+      <div class="welcome-logo-row">
+        <div class="welcome-logo-mark">${logoSvg}</div>
+        <span class="welcome-wordmark">Nex Helix</span>
+      </div>
+      <div class="welcome-title">Your AI-powered workspace</div>
+      <div class="welcome-sub">Nex Helix brings together AI chat, file management, task tracking, skills, and automation into a single unified workspace. Everything you need to research, plan, write, and execute — in one place.</div>
+    </div>
+
+    <!-- Feature overview -->
+    <div class="feat-section-label">What you can do</div>
+    <div class="feat-grid">
+
+      <div class="feat-card" onclick="openNewChat()">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(99,102,241,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2H14C14.6 2 15 2.4 15 3V10C15 10.6 14.6 11 14 11H5L2 14V11C1.4 11 1 10.6 1 10V3C1 2.4 1.4 2 2 2Z"/></svg>
+          </div>
+          <div class="feat-card-name">AI Chat</div>
+        </div>
+        <div class="feat-card-desc">Have open-ended conversations with AI to brainstorm ideas, research topics, draft content, or think through complex problems.</div>
+        <div class="feat-card-tag">Chat tab</div>
+      </div>
+
+      <div class="feat-card" onclick="openTab('skill','skill','Web Search')">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(245,158,11,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 1.5L3.5 9H7.5L5.5 14.5L12.5 7H8.5L10 1.5Z"/></svg>
+          </div>
+          <div class="feat-card-name">Skills</div>
+        </div>
+        <div class="feat-card-desc">Run purpose-built AI tools — web search, data analysis, email drafting, summarisation, and more. Each skill is tuned for a specific task.</div>
+        <div class="feat-card-tag">Skills tab</div>
+      </div>
+
+      <div class="feat-card" onclick="openTab('workflow','workflow','Daily Digest')">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(70,199,136,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#46c788" stroke-width="1.4"><circle cx="3" cy="4" r="2"/><circle cx="13" cy="4" r="2"/><circle cx="8" cy="13" r="2"/><path d="M5 4H11M4 5.8L7 11.5M12 5.8L9 11.5" stroke-width="1.3"/></svg>
+          </div>
+          <div class="feat-card-name">Workflows</div>
+        </div>
+        <div class="feat-card-desc">Automate multi-step processes by chaining AI actions together. Set up recurring pipelines like a Daily Digest or research summaries.</div>
+        <div class="feat-card-tag">Workflows tab</div>
+      </div>
+
+      <div class="feat-card" onclick="openTab('task','task','Tasks')">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(239,68,68,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8L7 10.5L11 6"/></svg>
+          </div>
+          <div class="feat-card-name">Tasks</div>
+        </div>
+        <div class="feat-card-desc">Track and manage work items across sprints. Organise tasks by status, assign priorities, and keep your project backlog in order.</div>
+        <div class="feat-card-tag">Tasks tab</div>
+      </div>
+
+      <div class="feat-card" onclick="openTab('file','file','Q2 Brief.md')">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(59,130,246,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"><path d="M3 2H10L13 5V14H3V2Z M10 2V5H13"/></svg>
+          </div>
+          <div class="feat-card-name">Files</div>
+        </div>
+        <div class="feat-card-desc">Store and open documents, spreadsheets, and images alongside your work. Use the file tree in the sidebar to organise everything by project.</div>
+        <div class="feat-card-tag">Files tab</div>
+      </div>
+
+      <div class="feat-card" onclick="openNewChat()">
+        <div class="feat-card-top">
+          <div class="feat-card-icon" style="background:rgba(168,85,247,0.12)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#a855f7" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="1" fill="#a855f7" stroke="none"/></svg>
+          </div>
+          <div class="feat-card-name">Context-aware AI</div>
+        </div>
+        <div class="feat-card-desc">AI responses are grounded in your project files and past conversations. Reference documents directly in chat for precise, relevant answers.</div>
+        <div class="feat-card-tag">All tabs</div>
+      </div>
+
+    </div>
+
+    <!-- Quick start -->
+    <div class="feat-section-label">Get started</div>
     <div class="qa-grid">
       <div class="qa-card" onclick="openNewChat()">
         <div class="qa-ico">${ICONS.write}</div>
-        <div class="qa-title">New Chat</div>
-        <div class="qa-sub">Start a conversation</div>
+        <div class="qa-text">
+          <div class="qa-title">New Chat</div>
+          <div class="qa-sub">Start an AI conversation</div>
+        </div>
       </div>
       <div class="qa-card" onclick="openTab('task','task','Tasks')">
         <div class="qa-ico">${ICONS.task}</div>
-        <div class="qa-title">View Tasks</div>
-        <div class="qa-sub">3 in progress, 3 in backlog</div>
+        <div class="qa-text">
+          <div class="qa-title">View Tasks</div>
+          <div class="qa-sub">3 in progress · 3 in backlog</div>
+        </div>
       </div>
       <div class="qa-card" onclick="openTab('workflow','workflow','Daily Digest')">
         <div class="qa-ico">${ICONS.workflow}</div>
-        <div class="qa-title">Run Workflow</div>
-        <div class="qa-sub">Daily Digest is ready</div>
+        <div class="qa-text">
+          <div class="qa-title">Run a Workflow</div>
+          <div class="qa-sub">Daily Digest is ready</div>
+        </div>
       </div>
-      <div class="qa-card" onclick="openTab('file','file','Q2 Brief.md')">
-        <div class="qa-ico">${ICONS.file}</div>
-        <div class="qa-title">Open File</div>
-        <div class="qa-sub">Continue Q2 Brief.md</div>
+      <div class="qa-card" onclick="openTab('skill','skill','Web Search')">
+        <div class="qa-ico">${ICONS.skill}</div>
+        <div class="qa-text">
+          <div class="qa-title">Browse Skills</div>
+          <div class="qa-sub">Explore available tools</div>
+        </div>
       </div>
     </div>
+
+    <!-- Recent activity -->
     <div class="recent-title">Recent Activity</div>
     <div class="recent-rows">
       <div class="r-row" onclick="openChatById('chat-1')">
@@ -2398,6 +2560,7 @@ function buildHome() {
         <span class="r-ico">${ICONS.task}</span><span class="r-name">Sprint tasks updated</span><span class="r-meta">Monday</span>
       </div>
     </div>
+
   </div>`;
 }
 
@@ -3183,10 +3346,42 @@ function workspaceChats() {
   return CHATS.filter(c => !c.workspace || c.workspace === activeWorkspace);
 }
 
+function toggleChatSearch() {
+  const bar = document.getElementById('chat-search-bar');
+  const btn = document.getElementById('chat-search-btn');
+  const input = document.getElementById('chat-search-input');
+  const isOpen = bar.classList.toggle('open');
+  btn.classList.toggle('search-active', isOpen);
+  if (isOpen) {
+    input.focus();
+  } else {
+    input.value = '';
+    document.getElementById('chat-search-clear').classList.remove('visible');
+    // restore the current list filter
+    filterChats('');
+  }
+}
+
+function clearChatSearch() {
+  const input = document.getElementById('chat-search-input');
+  input.value = '';
+  input.focus();
+  document.getElementById('chat-search-clear').classList.remove('visible');
+  filterChats('');
+}
+
 function filterChats(q) {
-  const base = workspaceChats().filter(c => activeChatListFilter === 'all' || c.lists.includes(activeChatListFilter));
-  const filtered = q ? base.filter(c => c.title.toLowerCase().includes(q.toLowerCase()) || c.preview.toLowerCase().includes(q.toLowerCase())) : base;
+  // When searching, scan across all threads; otherwise respect active list filter
+  const base = q
+    ? workspaceChats()
+    : workspaceChats().filter(c => activeChatListFilter === 'all' || c.lists.includes(activeChatListFilter));
+  const ql = q.toLowerCase();
+  const filtered = q
+    ? base.filter(c => c.title.toLowerCase().includes(ql) || c.preview.toLowerCase().includes(ql))
+    : base;
   renderChatList(filtered);
+  const clearBtn = document.getElementById('chat-search-clear');
+  if (clearBtn) clearBtn.classList.toggle('visible', q.length > 0);
 }
 
 function switchChatList(btn, filter) {
@@ -3294,7 +3489,7 @@ function setupResize() {
     const total = app.offsetWidth;
     const delta = e.clientX - startX;
     if (which === dL) {
-      nav.style.width = Math.max(44, Math.min(startNavW + delta, total * 0.55)) + 'px';
+      nav.style.width = Math.max(220, Math.min(startNavW + delta, total * 0.55)) + 'px';
     } else {
       chat.style.width = Math.max(44, Math.min(startChatW - delta, total * 0.55)) + 'px';
     }
