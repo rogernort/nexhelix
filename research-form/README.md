@@ -95,7 +95,13 @@ edit that array only. Example — adding a question is one entry:
 
 Supported types: `text`, `email`, `textarea`, `radio`, `checkbox`, `select`, `scale`,
 `file`, `consent`. Add `allowOther: true` to any radio/checkbox to get an "Other"
-option with a free-text box.
+option with a free-text box. Add `showIf: { q: "<question id>", value: "<option>" }`
+to make a question appear only while that option is ticked on another question.
+
+Textareas get a mic button in browsers that support speech recognition (Chrome,
+Edge, Safari): the respondent speaks, the transcript lands in the box as editable
+text. No audio is stored, only the transcript. The button doesn't render in
+unsupported browsers (Firefox).
 
 Two rules when you edit:
 

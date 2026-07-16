@@ -154,16 +154,30 @@
   .other-wrap{margin-top:var(--s-2)}
 
   /* scale */
-  .scale-btns{display:flex;gap:var(--s-2)}
+  .scale{max-width:420px;margin:0 auto}
+  .scale-btns{display:flex;gap:var(--s-4);justify-content:center}
   .scale-btn{
-    flex:1;max-width:64px;aspect-ratio:1;border-radius:50%;border:1px solid var(--border-strong);
+    flex:1;max-width:56px;aspect-ratio:1;border-radius:14px;border:1px solid var(--border-strong);
     background:var(--surface);font-family:inherit;font-size:16px;font-weight:var(--fw-semibold);
     color:var(--text);cursor:pointer;transition:all var(--dur-fast) var(--ease);
   }
   .scale-btn:hover{background:var(--surface-muted)}
   .scale-btn.selected{background:var(--ink);border-color:var(--ink);color:#fff}
-  .scale-labels{display:flex;justify-content:space-between;margin-top:var(--s-2);font-size:13px;color:var(--text-secondary);gap:var(--s-4)}
+  .scale-labels{display:flex;justify-content:space-between;margin-top:var(--s-3);font-size:13px;color:var(--text-secondary);gap:var(--s-4)}
   .scale-labels span:last-child{text-align:right}
+
+  /* voice input on textareas */
+  .ta-wrap{position:relative}
+  .ta-wrap textarea.input{padding-right:54px}
+  .mic-btn{
+    position:absolute;right:10px;bottom:10px;width:36px;height:36px;border-radius:50%;
+    border:1px solid var(--border-strong);background:var(--surface);cursor:pointer;
+    font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;
+    padding:0;transition:all var(--dur-fast) var(--ease);
+  }
+  .mic-btn:hover{background:var(--surface-muted)}
+  .mic-btn.recording{background:var(--danger);border-color:var(--danger);animation:micPulse 1.2s ease-in-out infinite}
+  @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(209,67,67,.35)}50%{box-shadow:0 0 0 9px rgba(209,67,67,0)}}
 
   /* file upload */
   .dropzone{
@@ -322,7 +336,7 @@ const CONFIG = {
 
   // Bump this every time you change the questions, so you can tell
   // waves of responses apart in the Sheet.
-  FORM_VERSION: "v1.1",
+  FORM_VERSION: "v1.2",
 
   MAX_FILE_MB: 10,     // per file
   MAX_TOTAL_MB: 24     // per submission (base64 inflates ~33%, keep headroom)
@@ -367,6 +381,13 @@ const SECTIONS = [
 const QUESTIONS = [
 
   // ---- 1 · About you ----
+  { id: "technical_self", section: "about", type: "scale", required: true,
+    label: "How technical would you say you are?",
+    help: "There's no right answer, we're interested in the whole range.",
+    min: 1, max: 5,
+    minLabel: "I steer clear of anything technical",
+    maxLabel: "I'm comfortable writing code" },
+
   { id: "role_title", section: "about", type: "text", required: true,
     label: "What's your job title, or how would you describe your role?",
     placeholder: "e.g. Head of Operations" },
@@ -376,17 +397,6 @@ const QUESTIONS = [
     options: ["Operations", "Product", "Marketing", "Sales", "Finance",
               "People / HR", "Founder / leadership"],
     allowOther: true },
-
-  { id: "company_size", section: "about", type: "radio", required: true,
-    label: "How many people work at your company?",
-    options: ["Just me", "2–10", "11–50", "51–200", "201–1,000", "More than 1,000"] },
-
-  { id: "technical_self", section: "about", type: "scale", required: true,
-    label: "How technical would you say you are?",
-    help: "There's no right answer, we're interested in the whole range.",
-    min: 1, max: 5,
-    minLabel: "I steer clear of anything technical",
-    maxLabel: "I'm comfortable writing code" },
 
   // ---- 2 · Your AI setup ----
   { id: "ai_tools", section: "setup", type: "checkbox", required: true,
@@ -416,10 +426,16 @@ const QUESTIONS = [
     help: "Tick everything you've made, however small or scrappy.",
     options: ["Saved or reusable prompts", "Prompt templates my team uses",
               "Custom instructions / system prompts", "Custom GPTs or Claude Projects",
-              "Skills or CLAUDE.md files", "Automations (Zapier, Make, n8n…)",
+              "Skills or CLAUDE.md files", "Shared context folder in git or shared drive",
+              "Automations (Zapier, Make, n8n…)",
               "Small internal tools built with AI", "Custom HTML artefacts",
               "None of these yet"],
     allowOther: true },
+
+  { id: "html_artefacts_desc", section: "built", type: "textarea", required: false,
+    label: "You ticked custom HTML artefacts. What do they do?",
+    placeholder: "e.g. A dashboard that pulls my tasks together, a calculator for quotes…",
+    showIf: { q: "built_things", value: "Custom HTML artefacts" } },
 
   { id: "most_useful", section: "built", type: "textarea", required: false,
     label: "Think of the most useful one. What is it, and what does it do for you?",
@@ -503,6 +519,9 @@ const QUESTIONS = [
    ===================================================================== */
 
 const OTHER_VALUE = "__other__";
+// Browser speech recognition (Chrome, Edge, Safari). Where unsupported
+// (e.g. Firefox), the mic buttons simply don't render.
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const state = {
   screen: -1,               // -1 = intro, 0..n-1 = sections, n = success
   answers: {},
@@ -538,8 +557,12 @@ function controlHTML(q) {
              '" id="in_' + esc(q.id) + '" placeholder="' + esc(q.placeholder || "") + '">';
 
     case "textarea":
-      return '<textarea class="input" id="in_' + esc(q.id) + '" rows="4" placeholder="' +
-             esc(q.placeholder || "") + '"></textarea>';
+      return '<div class="ta-wrap">' +
+             '<textarea class="input" id="in_' + esc(q.id) + '" rows="4" placeholder="' +
+             esc(q.placeholder || "") + '"></textarea>' +
+             (SR ? '<button type="button" class="mic-btn" data-mic="' + esc(q.id) +
+                   '" title="Answer by voice" aria-label="Record a voice answer">🎤</button>' : "") +
+             "</div>";
 
     case "select": {
       const opts = ['<option value="" disabled selected>Choose one…</option>']
@@ -793,6 +816,65 @@ function restoreDraft() {
   }
 }
 
+/* ---------- conditional questions ----------
+   A question with showIf: { q, value } only appears while that option is
+   ticked on the controlling question. Hidden questions are skipped in
+   validation and their answers are dropped. */
+
+function updateConditionals() {
+  QUESTIONS.forEach(q => {
+    if (!q.showIf) return;
+    const qEl = $('.q[data-qid="' + q.id + '"]');
+    if (!qEl) return;
+    const on = $$('input[name="q_' + q.showIf.q + '"]:checked')
+      .some(el => el.value === q.showIf.value);
+    qEl.hidden = !on;
+  });
+}
+
+/* ---------- voice input ----------
+   One recording at a time. Final transcript chunks are appended to the
+   textarea, where the respondent can edit them like typed text. */
+
+let activeRec = null, activeMicBtn = null;
+
+function stopRecording() {
+  if (activeRec) { try { activeRec.stop(); } catch (e) {} }
+  if (activeMicBtn) {
+    activeMicBtn.classList.remove("recording");
+    activeMicBtn.title = "Answer by voice";
+  }
+  activeRec = null;
+  activeMicBtn = null;
+}
+
+function startRecording(micBtn) {
+  const ta = $("#in_" + micBtn.dataset.mic);
+  const rec = new SR();
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.lang = navigator.language || "en";
+  rec.onresult = e => {
+    let text = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) text += e.results[i][0].transcript;
+    }
+    if (text.trim()) {
+      ta.value = (ta.value ? ta.value.replace(/\s+$/, "") + " " : "") + text.trim();
+      const qEl = ta.closest(".q");
+      if (qEl) qEl.classList.remove("invalid");
+      scheduleDraftSave();
+    }
+  };
+  rec.onend = () => { if (activeRec === rec) stopRecording(); };
+  rec.onerror = () => { if (activeRec === rec) stopRecording(); };
+  activeRec = rec;
+  activeMicBtn = micBtn;
+  micBtn.classList.add("recording");
+  micBtn.title = "Stop recording";
+  try { rec.start(); } catch (e) { stopRecording(); }
+}
+
 /* ---------- collecting & validating ---------- */
 
 function collectValue(q) {
@@ -859,8 +941,13 @@ function validateSection(sectionIdx) {
   const sectionId = SECTIONS[sectionIdx].id;
   let firstInvalid = null;
   questionsFor(sectionId).forEach(q => {
-    const value = collectValue(q);
     const qEl = $('.q[data-qid="' + q.id + '"]');
+    if (qEl.hidden) {
+      qEl.classList.remove("invalid");
+      delete state.answers[q.id];
+      return;
+    }
+    const value = collectValue(q);
     const err = validationError(q, value);
     if (err) {
       qEl.classList.add("invalid");
@@ -1036,6 +1123,7 @@ function wireEvents() {
     // clear error styling as soon as they interact
     const qEl = input.closest(".q");
     if (qEl) qEl.classList.remove("invalid");
+    updateConditionals();
     scheduleDraftSave();
   });
 
@@ -1057,7 +1145,12 @@ function wireEvents() {
       return;
     }
     const rm = ev.target.closest(".fremove");
-    if (rm) removeFile(rm.dataset.qid, Number(rm.dataset.idx));
+    if (rm) { removeFile(rm.dataset.qid, Number(rm.dataset.idx)); return; }
+    const mic = ev.target.closest(".mic-btn");
+    if (mic && SR) {
+      if (mic === activeMicBtn) stopRecording();
+      else { stopRecording(); startRecording(mic); }
+    }
   });
 
   // copy-link button on the success screen
@@ -1105,6 +1198,7 @@ buildForm();
 wireEvents();
 updateProgress();
 restoreDraft();
+updateConditionals();
 </script>
 </body>
 </html>
