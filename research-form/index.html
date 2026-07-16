@@ -4,7 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How do you really work with AI? · NexHelix Research</title>
-<meta name="description" content="A 5–7 minute survey about how non-coders build with AI. Run by NexHelix.">
+<meta name="description" content="A 7 minute survey about how non-coders build with AI. Run by NexHelix.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="How do you really work with AI?">
+<meta property="og:description" content="A 7 minute survey about how people who don't write code get real work done with AI. Your answers shape what we build next.">
+<meta property="og:url" content="https://rogernort.github.io/nexhelix/research-form/">
+<meta property="og:image" content="https://rogernort.github.io/nexhelix/research-form/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How do you really work with AI?">
+<meta name="twitter:description" content="A 7 minute survey about how people who don't write code get real work done with AI.">
+<meta name="twitter:image" content="https://rogernort.github.io/nexhelix/research-form/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -214,6 +225,12 @@
     width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;
     display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:var(--s-5);
   }
+  .share-row{
+    display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;
+    margin-top:var(--s-6);padding-top:var(--s-5);border-top:1px solid rgba(10,11,13,.12);
+  }
+  .share-row .share-prompt{margin-top:0;font-size:14.5px}
+  .share-row .share-prompt b{color:var(--text)}
 
   footer{padding:var(--s-6) 0;border-top:1px solid var(--border);margin-top:var(--s-8)}
   footer .wrap{font-size:13px;color:var(--text-secondary)}
@@ -275,6 +292,10 @@
           Your response has been recorded. If you offered to chat, we'll be in touch by email soon.
           In the meantime, thank you for helping shape NexHelix.
         </p>
+        <div class="share-row">
+          <p class="share-prompt"><b>Know someone who tinkers with AI?</b> Send them this survey.</p>
+          <button type="button" class="btn btn-primary" id="shareBtn">Copy link</button>
+        </div>
       </div>
     </section>
 
@@ -643,6 +664,8 @@ function showScreen(idx) {
   const el = idx < 0 ? all[0] : all[idx + 1];
   el.classList.add("active");
   updateProgress();
+  if (idx >= SECTIONS.length) { clearDraft(); }
+  else if (idx >= 0) { saveDraft(); }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -650,7 +673,7 @@ function updateProgress() {
   const n = SECTIONS.length;
   let pct = 0, label = "";
   if (state.screen >= 0 && state.screen < n) {
-    pct = (state.screen / n) * 100;
+    pct = ((state.screen + 1) / n) * 100;
     label = "Part " + (state.screen + 1) + " of " + n;
   } else if (state.screen >= n) {
     pct = 100;
@@ -658,6 +681,116 @@ function updateProgress() {
   }
   $("#progressFill").style.width = pct + "%";
   $("#progressLabel").textContent = label;
+}
+
+/* ---------- draft persistence ----------
+   Answers are saved to localStorage as people type, so a refresh or an
+   accidental swipe-back never loses a part-finished response. The draft
+   is cleared the moment a submission succeeds. Files can't be persisted
+   (too large for localStorage), everything else survives. */
+
+const DRAFT_KEY = "nexhelix_survey_draft";
+let draftTimer = null;
+
+function saveDraft() {
+  const values = {};
+  QUESTIONS.forEach(q => {
+    switch (q.type) {
+      case "text": case "email": case "textarea": case "select": {
+        const el = $("#in_" + q.id);
+        if (el && el.value) values[q.id] = el.value;
+        break;
+      }
+      case "radio": {
+        const checked = $('input[name="q_' + q.id + '"]:checked');
+        if (checked) values[q.id] = checked.value;
+        const other = $("#otherin_" + q.id);
+        if (other && other.value) values[q.id + "__other"] = other.value;
+        break;
+      }
+      case "checkbox": {
+        const checked = $$('input[name="q_' + q.id + '"]:checked').map(el => el.value);
+        if (checked.length) values[q.id] = checked;
+        const other = $("#otherin_" + q.id);
+        if (other && other.value) values[q.id + "__other"] = other.value;
+        break;
+      }
+      case "scale": {
+        const sel = $("#scale_" + q.id + " .scale-btn.selected");
+        if (sel) values[q.id] = sel.dataset.value;
+        break;
+      }
+      case "consent": {
+        const box = $('input[name="q_' + q.id + '"]');
+        if (box && box.checked) values[q.id] = true;
+        break;
+      }
+    }
+  });
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      screen: state.screen, values: values, savedAt: Date.now()
+    }));
+  } catch (e) { /* storage unavailable (private mode), nothing to do */ }
+}
+
+function scheduleDraftSave() {
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(saveDraft, 400);
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+}
+
+function restoreDraft() {
+  let draft = null;
+  try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); } catch (e) {}
+  if (!draft || !draft.values || Object.keys(draft.values).length === 0) return;
+  const values = draft.values;
+  QUESTIONS.forEach(q => {
+    const v = values[q.id];
+    if (v == null) return;
+    switch (q.type) {
+      case "text": case "email": case "textarea": case "select": {
+        const el = $("#in_" + q.id);
+        if (el) el.value = v;
+        break;
+      }
+      case "radio": case "checkbox": {
+        const wanted = Array.isArray(v) ? v : [v];
+        $$('input[name="q_' + q.id + '"]').forEach(el => {
+          if (wanted.indexOf(el.value) !== -1) {
+            el.checked = true;
+            el.closest(".opt").classList.add("checked");
+          }
+        });
+        const otherWrap = $("#other_" + q.id);
+        if (otherWrap && wanted.indexOf(OTHER_VALUE) !== -1) {
+          otherWrap.hidden = false;
+          const otherText = values[q.id + "__other"];
+          if (otherText) $("#otherin_" + q.id).value = otherText;
+        }
+        break;
+      }
+      case "scale": {
+        const btn = $('#scale_' + q.id + ' .scale-btn[data-value="' + v + '"]');
+        if (btn) btn.classList.add("selected");
+        break;
+      }
+      case "consent": {
+        const box = $('input[name="q_' + q.id + '"]');
+        if (box) {
+          box.checked = true;
+          box.closest(".opt").classList.add("checked");
+        }
+        break;
+      }
+    }
+  });
+  if (typeof draft.screen === "number" && draft.screen >= 0 && draft.screen < SECTIONS.length) {
+    showScreen(draft.screen);
+  }
 }
 
 /* ---------- collecting & validating ---------- */
@@ -903,12 +1036,14 @@ function wireEvents() {
     // clear error styling as soon as they interact
     const qEl = input.closest(".q");
     if (qEl) qEl.classList.remove("invalid");
+    scheduleDraftSave();
   });
 
   // clear error styling when typing
   document.addEventListener("input", ev => {
     const qEl = ev.target.closest && ev.target.closest(".q");
     if (qEl) qEl.classList.remove("invalid");
+    scheduleDraftSave();
   });
 
   // scale buttons
@@ -918,11 +1053,34 @@ function wireEvents() {
       $$(".scale-btn", btn.parentElement).forEach(b => b.classList.remove("selected"));
       btn.classList.add("selected");
       btn.closest(".q").classList.remove("invalid");
+      scheduleDraftSave();
       return;
     }
     const rm = ev.target.closest(".fremove");
     if (rm) removeFile(rm.dataset.qid, Number(rm.dataset.idx));
   });
+
+  // copy-link button on the success screen
+  const shareBtn = $("#shareBtn");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
+      const link = "https://rogernort.github.io/nexhelix/research-form/";
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(link);
+        ok = true;
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        try { ok = document.execCommand("copy"); } catch (e2) {}
+        document.body.removeChild(ta);
+      }
+      shareBtn.textContent = ok ? "Copied ✓" : link;
+      setTimeout(() => { shareBtn.textContent = "Copy link"; }, 2500);
+    });
+  }
 
   // file dropzones
   QUESTIONS.filter(q => q.type === "file").forEach(q => {
@@ -946,6 +1104,7 @@ function wireEvents() {
 buildForm();
 wireEvents();
 updateProgress();
+restoreDraft();
 </script>
 </body>
 </html>
