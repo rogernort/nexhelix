@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How do you really work with AI? — NexHelix Research</title>
+<meta name="description" content="A 5–7 minute survey about how non-coders build with AI. Run by NexHelix.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0B0D;
+    --ink-soft:#1C1E22;
+    --surface:#FFFFFF;
+    --surface-muted:#F5F6F7;
+    --surface-sunken:#EDEFF1;
+    --text:#0A0B0D;
+    --text-secondary:#5B5F66;
+    --text-on-dark:#FFFFFF;
+    --text-on-dark-soft:#B9BDC4;
+    --border:#E6E8EB;
+    --border-strong:#D2D6DB;
+
+    --scene-blue:#D4E7F7;
+    --scene-pink:#F8DCE8;
+    --scene-orange:#F7DAC2;
+    --scene-purple:#E6DEF6;
+    --scene-mint:#D8EFE4;
+
+    --accent:#F2A65A;
+    --accent-strong:#E07B39;
+
+    --success:#1F9D63;
+    --danger:#D14343;
+
+    --r-sm:8px;
+    --r-md:14px;
+    --r-lg:24px;
+    --r-pill:999px;
+
+    --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px;
+    --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+
+    --shadow-sm:0 1px 2px rgba(10,11,13,.06);
+    --shadow-md:0 8px 24px rgba(10,11,13,.08);
+
+    --font-sans:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --dur-fast:140ms; --dur:240ms;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-sans);
+    color:var(--text);
+    background:var(--surface);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 var(--s-5)}
+
+  .eyebrow{font-size:12px;font-weight:var(--fw-semibold);letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary)}
+  .lead{font-size:19px;color:var(--text-secondary);line-height:1.5}
+  .small{font-size:14px;color:var(--text-secondary)}
+
+  /* ---- Header + progress ---- */
+  header.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  header.top .bar{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .logo{font-weight:var(--fw-bold);letter-spacing:-.02em;font-size:17px}
+  .logo span{color:var(--text-secondary);font-weight:var(--fw-medium)}
+  .progress-label{font-size:13px;color:var(--text-secondary);font-weight:var(--fw-medium)}
+  .progress-track{height:3px;background:var(--surface-sunken)}
+  .progress-fill{height:100%;width:0%;background:var(--ink);transition:width var(--dur) var(--ease)}
+
+  main{padding:var(--s-7) 0 var(--s-9)}
+
+  /* ---- Screens ---- */
+  .screen{display:none;animation:fadeUp var(--dur) var(--ease)}
+  .screen.active{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ---- Intro ---- */
+  .hero h1{font-size:clamp(34px,6vw,54px);font-weight:var(--fw-bold);line-height:1.05;letter-spacing:-.02em;max-width:16ch}
+  .hero .lead{margin-top:var(--s-4);max-width:56ch}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-5)}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-muted);border:1px solid var(--border);border-radius:var(--r-pill);padding:7px 14px;font-size:13px;font-weight:var(--fw-medium);color:var(--text-secondary)}
+  .hero-note{background:var(--scene-blue);border-radius:var(--r-md);padding:var(--s-4) var(--s-5);font-size:14px;margin-top:var(--s-6)}
+
+  /* ---- Section head ---- */
+  .section-head{margin-bottom:var(--s-6)}
+  .section-head .badge{display:inline-block;border-radius:var(--r-pill);padding:6px 14px;font-size:12px;font-weight:var(--fw-semibold);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin-bottom:var(--s-4)}
+  .section-head h2{font-size:clamp(26px,4vw,36px);font-weight:var(--fw-bold);line-height:1.12;letter-spacing:-.018em}
+  .section-head .lead{margin-top:var(--s-2);font-size:17px}
+
+  /* ---- Questions ---- */
+  .q{margin-bottom:var(--s-6)}
+  .q-label{display:block;font-size:17px;font-weight:var(--fw-semibold);letter-spacing:-.005em;margin-bottom:var(--s-2)}
+  .q-label .req{color:var(--accent-strong);margin-left:2px}
+  .q-help{font-size:14px;color:var(--text-secondary);margin:-4px 0 var(--s-3)}
+  .q-error{display:none;font-size:13.5px;color:var(--danger);font-weight:var(--fw-medium);margin-top:var(--s-2)}
+  .q.invalid .q-error{display:block}
+
+  .input{
+    width:100%;font-family:inherit;font-size:16px;color:var(--text);
+    background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-md);
+    padding:13px 16px;transition:border-color var(--dur-fast) var(--ease),box-shadow var(--dur-fast) var(--ease);
+  }
+  .input::placeholder{color:#9BA0A8}
+  .input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(10,11,13,.08)}
+  textarea.input{resize:vertical;min-height:104px;line-height:1.5}
+  select.input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235B5F66' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;cursor:pointer}
+
+  /* option pills (radio / checkbox) */
+  .opts{display:flex;flex-direction:column;gap:var(--s-2)}
+  .opt{
+    display:flex;align-items:flex-start;gap:12px;cursor:pointer;
+    border:1px solid var(--border-strong);border-radius:var(--r-md);
+    padding:12px 16px;font-size:15.5px;background:var(--surface);
+    transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease);
+  }
+  .opt:hover{background:var(--surface-muted)}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt .box{
+    flex:none;width:20px;height:20px;margin-top:2px;border:1.5px solid var(--border-strong);
+    border-radius:6px;background:var(--surface);position:relative;
+    transition:background var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease);
+  }
+  .opt.radio .box{border-radius:50%}
+  .opt .box::after{
+    content:"";position:absolute;inset:0;margin:auto;opacity:0;transition:opacity var(--dur-fast) var(--ease);
+  }
+  .opt.radio .box::after{width:8px;height:8px;border-radius:50%;background:#fff}
+  .opt.check .box::after{
+    width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg);margin-top:5px;
+  }
+  .opt.checked{border-color:var(--ink);background:var(--surface-muted)}
+  .opt.checked .box{background:var(--ink);border-color:var(--ink)}
+  .opt.checked .box::after{opacity:1}
+  .other-wrap{margin-top:var(--s-2)}
+
+  /* scale */
+  .scale-btns{display:flex;gap:var(--s-2)}
+  .scale-btn{
+    flex:1;max-width:64px;aspect-ratio:1;border-radius:50%;border:1px solid var(--border-strong);
+    background:var(--surface);font-family:inherit;font-size:16px;font-weight:var(--fw-semibold);
+    color:var(--text);cursor:pointer;transition:all var(--dur-fast) var(--ease);
+  }
+  .scale-btn:hover{background:var(--surface-muted)}
+  .scale-btn.selected{background:var(--ink);border-color:var(--ink);color:#fff}
+  .scale-labels{display:flex;justify-content:space-between;margin-top:var(--s-2);font-size:13px;color:var(--text-secondary);gap:var(--s-4)}
+  .scale-labels span:last-child{text-align:right}
+
+  /* file upload */
+  .dropzone{
+    border:1.5px dashed var(--border-strong);border-radius:var(--r-lg);
+    padding:var(--s-6) var(--s-5);text-align:center;cursor:pointer;
+    transition:border-color var(--dur-fast) var(--ease),background var(--dur-fast) var(--ease);
+  }
+  .dropzone:hover,.dropzone.dragover{border-color:var(--ink);background:var(--surface-muted)}
+  .dropzone .dz-icon{font-size:26px;line-height:1;margin-bottom:var(--s-2)}
+  .dropzone b{font-weight:var(--fw-semibold)}
+  .dropzone p{font-size:14px;color:var(--text-secondary);margin-top:4px}
+  .file-list{display:flex;flex-direction:column;gap:var(--s-2);margin-top:var(--s-3)}
+  .file-item{
+    display:flex;align-items:center;gap:10px;background:var(--surface-muted);
+    border:1px solid var(--border);border-radius:var(--r-md);padding:9px 14px;font-size:14px;
+  }
+  .file-item .fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:var(--fw-medium)}
+  .file-item .fsize{color:var(--text-secondary);font-size:13px;flex:none}
+  .file-item .fremove{flex:none;border:none;background:none;cursor:pointer;color:var(--text-secondary);font-size:16px;padding:2px 6px;border-radius:6px;font-family:inherit}
+  .file-item .fremove:hover{background:var(--surface-sunken);color:var(--danger)}
+  .file-error{font-size:13.5px;color:var(--danger);margin-top:var(--s-2)}
+
+  /* buttons + nav */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:inherit;
+    font-weight:var(--fw-semibold);font-size:15px;padding:14px 28px;border-radius:var(--r-pill);
+    transition:transform var(--dur-fast) var(--ease),background var(--dur) var(--ease),opacity var(--dur) var(--ease);
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn-primary{background:var(--ink);color:#fff}
+  .btn-primary:hover:not(:disabled){background:#23262b}
+  .btn-ghost{background:transparent;color:var(--ink)}
+  .btn-ghost:hover{background:var(--surface-muted)}
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:var(--s-7);gap:var(--s-3)}
+  .nav-row .spacer{flex:1}
+
+  .spinner{
+    width:16px;height:16px;border-radius:50%;flex:none;
+    border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+    animation:spin .7s linear infinite;display:none;
+  }
+  .btn.loading .spinner{display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* submit error banner */
+  .submit-error{
+    display:none;background:#FBEAEA;border:1px solid #F0C6C6;border-radius:var(--r-md);
+    padding:var(--s-4) var(--s-5);font-size:14.5px;margin-top:var(--s-5);color:#8C2F2F;
+  }
+  .submit-error.visible{display:block}
+  .submit-error b{display:block;margin-bottom:2px;color:var(--danger)}
+
+  /* success */
+  .success-card{border-radius:var(--r-lg);padding:var(--s-7);background:var(--scene-mint)}
+  .success-card h2{font-size:clamp(28px,5vw,42px);font-weight:var(--fw-bold);letter-spacing:-.02em;line-height:1.1}
+  .success-card p{margin-top:var(--s-3);color:var(--text-secondary);max-width:48ch}
+  .success-card .tick{
+    width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:var(--s-5);
+  }
+
+  footer{padding:var(--s-6) 0;border-top:1px solid var(--border);margin-top:var(--s-8)}
+  footer .wrap{font-size:13px;color:var(--text-secondary)}
+
+  @media(max-width:560px){
+    main{padding-top:var(--s-6)}
+    .scale-btn{max-width:none}
+    .nav-row{margin-top:var(--s-6)}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap bar">
+    <span class="logo">NexHelix <span>· Research</span></span>
+    <span class="progress-label" id="progressLabel"></span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- Intro screen -->
+    <section class="screen active hero" id="intro">
+      <p class="eyebrow" style="margin-bottom:var(--s-3)">A short research survey</p>
+      <h1>How do you really work with AI?</h1>
+      <p class="lead">
+        We're studying how people who don't write code get real work done with AI —
+        the prompts, templates and tricks you've built, and where the tools still let you down.
+        Your answers directly shape what we build next.
+      </p>
+      <div class="hero-meta">
+        <span class="chip">⏱ 5–7 minutes</span>
+        <span class="chip">6 short parts</span>
+        <span class="chip">Anonymous unless you opt in</span>
+      </div>
+      <div class="hero-note">
+        <b>How we use this.</b> Responses are used for NexHelix product research only.
+        They're never shared or published in a way that identifies you, and you can ask
+        for your data to be deleted at any time.
+      </div>
+      <div class="nav-row" style="margin-top:var(--s-6)">
+        <span class="spacer"></span>
+        <button class="btn btn-primary" id="startBtn">Start the survey →</button>
+      </div>
+    </section>
+
+    <!-- Section screens are rendered here by JS -->
+    <div id="formScreens"></div>
+
+    <!-- Success screen -->
+    <section class="screen" id="successScreen">
+      <div class="success-card">
+        <div class="tick">✓</div>
+        <h2>Thank you — that's genuinely useful.</h2>
+        <p id="successNote">
+          Your response has been recorded. If you offered to chat, we'll be in touch by email soon.
+          In the meantime, thank you for helping shape NexHelix.
+        </p>
+      </div>
+    </section>
+
+    <!-- honeypot (spam trap) — kept out of sight, real people never fill it -->
+    <input type="text" id="hpField" name="website" tabindex="-1" autocomplete="off"
+           style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0" aria-hidden="true">
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">NexHelix research · Thanks for lending us your brain for a few minutes.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   CONFIG — the only things you should ever need to touch.
+   ===================================================================== */
+const CONFIG = {
+  // Paste your deployed Google Apps Script Web App URL here.
+  // It looks like: https://script.google.com/macros/s/AKfycb.../exec
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbzJdU3xdfwPxiMwT0ELprjY13hvjM-iOf4XyBT34Zvw7cs8j1Jk3nhlDmq4YKqHolKS/exec",
+
+  // Bump this every time you change the questions, so you can tell
+  // waves of responses apart in the Sheet.
+  FORM_VERSION: "v1.0",
+
+  MAX_FILE_MB: 10,     // per file
+  MAX_TOTAL_MB: 24     // per submission (base64 inflates ~33%, keep headroom)
+};
+
+/* =====================================================================
+   SECTIONS — one screen each. `scene` picks the pastel badge colour.
+   ===================================================================== */
+const SECTIONS = [
+  { id: "about",    title: "About you",        scene: "var(--scene-blue)",
+    intro: "A little context so we can compare answers across roles." },
+  { id: "setup",    title: "Your AI setup",    scene: "var(--scene-purple)",
+    intro: "Which tools you actually use — not which ones you've heard of." },
+  { id: "built",    title: "What you've built", scene: "var(--scene-mint)",
+    intro: "The reusable stuff — prompts, templates, automations — that makes AI work for you." },
+  { id: "tools",    title: "Your daily tools", scene: "var(--scene-orange)",
+    intro: "Where your work actually lives day to day." },
+  { id: "gap",      title: "The gap",          scene: "var(--scene-pink)",
+    intro: "The honest bit: what's still manual, and where AI falls short." },
+  { id: "followup", title: "Staying in touch", scene: "var(--scene-blue)",
+    intro: "Optional — but we'd love to go deeper with a few people." }
+];
+
+/* =====================================================================
+   QUESTIONS — the whole survey is defined here.
+   To add / edit / remove a question, change this array and bump
+   CONFIG.FORM_VERSION. The backend adds new columns automatically.
+
+   Fields:
+     id          unique key → becomes the column name in the Sheet
+     section     one of the SECTION ids above
+     type        text | email | textarea | radio | checkbox | select |
+                 scale | file | consent
+     label       the question as shown
+     help        (optional) smaller grey helper text
+     options     (radio / checkbox / select) array of strings
+     allowOther  (radio / checkbox) adds an "Other" option with a text box
+     required    true / false
+     placeholder (text / email / textarea)
+     min/max, minLabel/maxLabel   (scale)
+   ===================================================================== */
+const QUESTIONS = [
+
+  // ---- 1 · About you ----
+  { id: "role_title", section: "about", type: "text", required: true,
+    label: "What's your job title, or how would you describe your role?",
+    placeholder: "e.g. Head of Operations" },
+
+  { id: "work_type", section: "about", type: "radio", required: true,
+    label: "Which best describes the kind of work you do?",
+    options: ["Operations", "Product", "Marketing", "Sales", "Finance",
+              "People / HR", "Founder / leadership"],
+    allowOther: true },
+
+  { id: "company_size", section: "about", type: "radio", required: true,
+    label: "How many people work at your company?",
+    options: ["Just me", "2–10", "11–50", "51–200", "201–1,000", "More than 1,000"] },
+
+  { id: "technical_self", section: "about", type: "scale", required: true,
+    label: "How technical would you say you are?",
+    help: "There's no right answer — we're interested in the whole range.",
+    min: 1, max: 5,
+    minLabel: "I steer clear of anything technical",
+    maxLabel: "I'm comfortable writing code" },
+
+  // ---- 2 · Your AI setup ----
+  { id: "ai_tools", section: "setup", type: "checkbox", required: true,
+    label: "Which AI tools do you use regularly for work?",
+    help: "Tick everything you use at least weekly.",
+    options: ["ChatGPT", "Claude (the chat app)", "Claude Code", "Cowork",
+              "Microsoft Copilot", "Gemini", "Notion AI", "Perplexity",
+              "I don't use AI tools regularly"],
+    allowOther: true },
+
+  { id: "keep_one", section: "setup", type: "radio", required: true,
+    label: "If you could only keep one of them, which would you keep?",
+    options: ["ChatGPT", "Claude (the chat app)", "Claude Code", "Cowork",
+              "Microsoft Copilot", "Gemini", "Notion AI", "Perplexity",
+              "Honestly, I wouldn't miss any of them"],
+    allowOther: true },
+
+  { id: "ai_hours", section: "setup", type: "radio", required: true,
+    label: "In a typical week, how much of your work runs through an AI tool?",
+    help: "Your best guess is fine.",
+    options: ["Hardly any", "An hour or two", "3–10 hours", "10–20 hours",
+              "It's woven through most of my week"] },
+
+  // ---- 3 · What you've built ----
+  { id: "built_things", section: "built", type: "checkbox", required: true,
+    label: "Have you created any reusable things to make AI work better for you?",
+    help: "Tick everything you've made, however small or scrappy.",
+    options: ["Saved or reusable prompts", "Prompt templates my team uses",
+              "Custom instructions / system prompts", "Custom GPTs or Claude Projects",
+              "Skills or CLAUDE.md files", "Automations (Zapier, Make, n8n…)",
+              "Small internal tools built with AI", "None of these yet"],
+    allowOther: true },
+
+  { id: "most_useful", section: "built", type: "textarea", required: false,
+    label: "Think of the most useful one. What is it, and what does it do for you?",
+    help: "A couple of sentences is plenty — what it's for and how you use it.",
+    placeholder: "e.g. A prompt that turns messy meeting notes into a client update email…" },
+
+  { id: "built_job", section: "built", type: "textarea", required: false,
+    label: "If it disappeared tomorrow, what would you have to go back to doing?",
+    placeholder: "e.g. Writing every update from scratch, about an hour a week…" },
+
+  { id: "file_examples", section: "built", type: "file", required: false,
+    label: "Happy to share an example?",
+    help: "Prompts, templates, docs, screenshots — anything you've made. Files are used for NexHelix research only and never shared. Up to 10MB per file.",
+    accept: ".md,.txt,.pdf,.doc,.docx,.json,.zip,.csv,.png,.jpg,.jpeg,.gif,.webp" },
+
+  // ---- 4 · Your daily tools ----
+  { id: "task_tool", section: "tools", type: "checkbox", required: true,
+    label: "Where do your tasks and to-dos live?",
+    help: "Tick all that apply.",
+    options: ["Asana", "Linear", "Jira", "Trello", "Notion", "ClickUp",
+              "A to-do app (Todoist, Things, Reminders…)", "My email inbox",
+              "Spreadsheets", "Mostly in my head"],
+    allowOther: true },
+
+  { id: "docs_tool", section: "tools", type: "checkbox", required: true,
+    label: "Where do your company's documents live?",
+    help: "Tick all that apply.",
+    options: ["Google Drive / Docs", "Notion", "Coda", "SharePoint / OneDrive",
+              "Confluence", "Local files on my computer"],
+    allowOther: true },
+
+  { id: "comms_tool", section: "tools", type: "radio", required: true,
+    label: "What's your main way of talking to colleagues?",
+    options: ["Slack", "Microsoft Teams", "Email", "WhatsApp"],
+    allowOther: true },
+
+  { id: "calendar_tool", section: "tools", type: "radio", required: true,
+    label: "Which calendar runs your day?",
+    options: ["Google Calendar", "Outlook", "Apple Calendar",
+              "I don't really live by a calendar"],
+    allowOther: true },
+
+  // ---- 5 · The gap ----
+  { id: "manual_wish", section: "gap", type: "textarea", required: true,
+    label: "What do you still do manually, week after week, that you wish AI just handled?",
+    help: "Be specific — the more mundane, the better.",
+    placeholder: "e.g. Copying numbers from invoices into a spreadsheet every Friday…" },
+
+  { id: "ai_frustration", section: "gap", type: "textarea", required: false,
+    label: "When AI lets you down at work, what does that usually look like?",
+    placeholder: "e.g. It doesn't know anything about my company, so I re-explain everything…" },
+
+  { id: "first_delegate", section: "gap", type: "textarea", required: true,
+    label: "Imagine an AI that could securely see across all your tools — tasks, docs, messages, calendar. What's the first thing you'd hand over to it?",
+    placeholder: "The very first job you'd delegate, in your own words." },
+
+  // ---- 6 · Staying in touch ----
+  { id: "contact_email", section: "followup", type: "email", required: false,
+    label: "Your email (optional)",
+    help: "Only used to follow up about this research — nothing else.",
+    placeholder: "you@company.com" },
+
+  { id: "interview_ok", section: "followup", type: "radio", required: true,
+    label: "Would you be up for a 20-minute chat about how you work with AI?",
+    help: "If yes, pop your email in above so we can reach you.",
+    options: ["Yes, happy to chat", "Maybe — email me first", "No thanks"] },
+
+  { id: "consent", section: "followup", type: "consent", required: true,
+    label: "One last thing",
+    consentText: "I'm happy for my answers — and any files I've uploaded — to be stored and used for NexHelix product research.",
+    help: "Required. You can ask for your data to be deleted at any time." }
+];
+
+/* =====================================================================
+   Everything below renders the form from the config. You shouldn't
+   need to edit it to change questions.
+   ===================================================================== */
+
+const OTHER_VALUE = "__other__";
+const state = {
+  screen: -1,               // -1 = intro, 0..n-1 = sections, n = success
+  answers: {},
+  files: []                 // {questionId, name, mimeType, size, data}
+};
+
+const $  = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+function questionsFor(sectionId) {
+  return QUESTIONS.filter(q => q.section === sectionId);
+}
+
+/* ---------- rendering ---------- */
+
+function optionHTML(q, opt, kind) {
+  const inputType = kind === "radio" ? "radio" : "checkbox";
+  return (
+    '<label class="opt ' + (kind === "radio" ? "radio" : "check") + '">' +
+      '<input type="' + inputType + '" name="q_' + esc(q.id) + '" value="' + esc(opt) + '">' +
+      '<span class="box"></span><span>' + esc(opt) + '</span>' +
+    "</label>"
+  );
+}
+
+function controlHTML(q) {
+  switch (q.type) {
+    case "text":
+    case "email":
+      return '<input class="input" type="' + (q.type === "email" ? "email" : "text") +
+             '" id="in_' + esc(q.id) + '" placeholder="' + esc(q.placeholder || "") + '">';
+
+    case "textarea":
+      return '<textarea class="input" id="in_' + esc(q.id) + '" rows="4" placeholder="' +
+             esc(q.placeholder || "") + '"></textarea>';
+
+    case "select": {
+      const opts = ['<option value="" disabled selected>Choose one…</option>']
+        .concat((q.options || []).map(o => '<option value="' + esc(o) + '">' + esc(o) + "</option>"));
+      return '<select class="input" id="in_' + esc(q.id) + '">' + opts.join("") + "</select>";
+    }
+
+    case "radio":
+    case "checkbox": {
+      const kind = q.type;
+      let html = '<div class="opts">' +
+        (q.options || []).map(o => optionHTML(q, o, kind)).join("");
+      if (q.allowOther) {
+        html +=
+          '<label class="opt ' + (kind === "radio" ? "radio" : "check") + '">' +
+            '<input type="' + (kind === "radio" ? "radio" : "checkbox") +
+            '" name="q_' + esc(q.id) + '" value="' + OTHER_VALUE + '">' +
+            '<span class="box"></span><span>Other</span>' +
+          "</label>";
+      }
+      html += "</div>";
+      if (q.allowOther) {
+        html += '<div class="other-wrap" id="other_' + esc(q.id) + '" hidden>' +
+                '<input class="input" type="text" id="otherin_' + esc(q.id) +
+                '" placeholder="Tell us what…"></div>';
+      }
+      return html;
+    }
+
+    case "scale": {
+      const min = q.min || 1, max = q.max || 5;
+      let btns = "";
+      for (let v = min; v <= max; v++) {
+        btns += '<button type="button" class="scale-btn" data-value="' + v + '">' + v + "</button>";
+      }
+      return '<div class="scale" id="scale_' + esc(q.id) + '">' +
+               '<div class="scale-btns">' + btns + "</div>" +
+               '<div class="scale-labels"><span>' + esc(q.minLabel || min) +
+               "</span><span>" + esc(q.maxLabel || max) + "</span></div>" +
+             "</div>";
+    }
+
+    case "file":
+      return (
+        '<div class="dropzone" id="dz_' + esc(q.id) + '" role="button" tabindex="0">' +
+          '<div class="dz-icon">📎</div>' +
+          "<div><b>Click to add files</b> or drag them here</div>" +
+          "<p>Up to " + CONFIG.MAX_FILE_MB + "MB each · md, txt, pdf, docx, json, zip, images</p>" +
+        "</div>" +
+        '<input type="file" id="fi_' + esc(q.id) + '" multiple hidden accept="' + esc(q.accept || "") + '">' +
+        '<div class="file-list" id="fl_' + esc(q.id) + '"></div>' +
+        '<div class="file-error" id="fe_' + esc(q.id) + '"></div>'
+      );
+
+    case "consent":
+      return (
+        '<label class="opt check">' +
+          '<input type="checkbox" name="q_' + esc(q.id) + '" value="Yes">' +
+          '<span class="box"></span><span>' + esc(q.consentText || q.label) + "</span>" +
+        "</label>"
+      );
+
+    default:
+      return "";
+  }
+}
+
+function questionHTML(q) {
+  const showLabel = q.type !== "consent" || q.label;
+  return (
+    '<div class="q" data-qid="' + esc(q.id) + '" data-type="' + esc(q.type) + '">' +
+      (showLabel
+        ? '<label class="q-label" ' + (/^(text|email|textarea|select)$/.test(q.type)
+            ? 'for="in_' + esc(q.id) + '"' : "") + ">" +
+          esc(q.label) + (q.required ? '<span class="req">*</span>' : "") + "</label>"
+        : "") +
+      (q.help ? '<p class="q-help">' + esc(q.help) + "</p>" : "") +
+      controlHTML(q) +
+      '<p class="q-error"></p>' +
+    "</div>"
+  );
+}
+
+function buildForm() {
+  const host = $("#formScreens");
+  let html = "";
+  SECTIONS.forEach((s, i) => {
+    const isLast = i === SECTIONS.length - 1;
+    html +=
+      '<section class="screen" data-section="' + esc(s.id) + '">' +
+        '<div class="section-head">' +
+          '<span class="badge" style="background:' + s.scene + '">Part ' + (i + 1) +
+            " of " + SECTIONS.length + "</span>" +
+          "<h2>" + esc(s.title) + "</h2>" +
+          (s.intro ? '<p class="lead">' + esc(s.intro) + "</p>" : "") +
+        "</div>" +
+        '<div class="questions">' + questionsFor(s.id).map(questionHTML).join("") + "</div>" +
+        '<div class="submit-error" id="submitError_' + i + '"></div>' +
+        '<div class="nav-row">' +
+          '<button class="btn btn-ghost" data-nav="back">← Back</button>' +
+          '<span class="spacer"></span>' +
+          '<button class="btn btn-primary" data-nav="next">' +
+            (isLast ? '<span class="spinner"></span><span class="btn-text">Submit ✓</span>'
+                    : '<span class="btn-text">Continue →</span>') +
+          "</button>" +
+        "</div>" +
+      "</section>";
+  });
+  host.innerHTML = html;
+}
+
+/* ---------- navigation & progress ---------- */
+
+function screens() {
+  return [$("#intro")].concat($$("#formScreens > .screen")).concat([$("#successScreen")]);
+}
+
+function showScreen(idx) {
+  state.screen = idx;
+  const all = screens();
+  all.forEach(el => el.classList.remove("active"));
+  const el = idx < 0 ? all[0] : all[idx + 1];
+  el.classList.add("active");
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateProgress() {
+  const n = SECTIONS.length;
+  let pct = 0, label = "";
+  if (state.screen >= 0 && state.screen < n) {
+    pct = (state.screen / n) * 100;
+    label = "Part " + (state.screen + 1) + " of " + n;
+  } else if (state.screen >= n) {
+    pct = 100;
+    label = "Done ✓";
+  }
+  $("#progressFill").style.width = pct + "%";
+  $("#progressLabel").textContent = label;
+}
+
+/* ---------- collecting & validating ---------- */
+
+function collectValue(q) {
+  switch (q.type) {
+    case "text":
+    case "email":
+    case "textarea":
+      return $("#in_" + q.id).value.trim();
+
+    case "select":
+      return $("#in_" + q.id).value;
+
+    case "radio": {
+      const checked = $('input[name="q_' + q.id + '"]:checked');
+      if (!checked) return "";
+      if (checked.value === OTHER_VALUE) {
+        const t = ($("#otherin_" + q.id) || {}).value || "";
+        return t.trim() ? "Other: " + t.trim() : "Other";
+      }
+      return checked.value;
+    }
+
+    case "checkbox": {
+      return $$('input[name="q_' + q.id + '"]:checked').map(el => {
+        if (el.value === OTHER_VALUE) {
+          const t = ($("#otherin_" + q.id) || {}).value || "";
+          return t.trim() ? "Other: " + t.trim() : "Other";
+        }
+        return el.value;
+      });
+    }
+
+    case "scale": {
+      const sel = $("#scale_" + q.id + " .scale-btn.selected");
+      return sel ? Number(sel.dataset.value) : "";
+    }
+
+    case "file":
+      return state.files.filter(f => f.questionId === q.id).map(f => f.name);
+
+    case "consent": {
+      const box = $('input[name="q_' + q.id + '"]');
+      return box && box.checked ? "Yes" : "";
+    }
+  }
+  return "";
+}
+
+function validationError(q, value) {
+  const empty = Array.isArray(value) ? value.length === 0 : value === "" || value == null;
+  if (q.required && empty) {
+    if (q.type === "consent") return "We need your OK on this one before you submit.";
+    if (q.type === "checkbox") return "Please tick at least one.";
+    if (q.type === "radio" || q.type === "select" || q.type === "scale") return "Please pick one.";
+    return "Please fill this one in.";
+  }
+  if (q.type === "email" && !empty && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    return "That doesn't look like an email address.";
+  }
+  return null;
+}
+
+function validateSection(sectionIdx) {
+  const sectionId = SECTIONS[sectionIdx].id;
+  let firstInvalid = null;
+  questionsFor(sectionId).forEach(q => {
+    const value = collectValue(q);
+    const qEl = $('.q[data-qid="' + q.id + '"]');
+    const err = validationError(q, value);
+    if (err) {
+      qEl.classList.add("invalid");
+      $(".q-error", qEl).textContent = err;
+      if (!firstInvalid) firstInvalid = qEl;
+    } else {
+      qEl.classList.remove("invalid");
+      state.answers[q.id] = value;
+    }
+  });
+  if (firstInvalid) {
+    firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+    return false;
+  }
+  return true;
+}
+
+/* ---------- file uploads ---------- */
+
+function fmtSize(bytes) {
+  return bytes < 1024 * 1024
+    ? Math.max(1, Math.round(bytes / 1024)) + " KB"
+    : (bytes / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function totalFileBytes() {
+  return state.files.reduce((sum, f) => sum + f.size, 0);
+}
+
+function addFiles(qid, fileList) {
+  const errEl = $("#fe_" + qid);
+  errEl.textContent = "";
+  Array.prototype.forEach.call(fileList, file => {
+    if (file.size > CONFIG.MAX_FILE_MB * 1024 * 1024) {
+      errEl.textContent = '"' + file.name + '" is over ' + CONFIG.MAX_FILE_MB + "MB — could you share a smaller version?";
+      return;
+    }
+    if (totalFileBytes() + file.size > CONFIG.MAX_TOTAL_MB * 1024 * 1024) {
+      errEl.textContent = "That's a bit more than we can accept in one go (" + CONFIG.MAX_TOTAL_MB + "MB total).";
+      return;
+    }
+    if (state.files.some(f => f.questionId === qid && f.name === file.name && f.size === file.size)) {
+      return; // duplicate
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = String(reader.result).split(",")[1] || "";
+      state.files.push({
+        questionId: qid,
+        name: file.name,
+        mimeType: file.type || "application/octet-stream",
+        size: file.size,
+        data: base64
+      });
+      renderFileList(qid);
+    };
+    reader.onerror = () => { errEl.textContent = 'Couldn\'t read "' + file.name + '" — sorry, try another file?'; };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderFileList(qid) {
+  const listEl = $("#fl_" + qid);
+  const files = state.files.filter(f => f.questionId === qid);
+  listEl.innerHTML = files.map((f, i) =>
+    '<div class="file-item">' +
+      '<span class="fname">' + esc(f.name) + "</span>" +
+      '<span class="fsize">' + fmtSize(f.size) + "</span>" +
+      '<button type="button" class="fremove" data-qid="' + esc(qid) + '" data-idx="' + i +
+      '" aria-label="Remove file">✕</button>' +
+    "</div>"
+  ).join("");
+}
+
+function removeFile(qid, idx) {
+  const files = state.files.filter(f => f.questionId === qid);
+  const target = files[idx];
+  if (!target) return;
+  state.files.splice(state.files.indexOf(target), 1);
+  renderFileList(qid);
+}
+
+/* ---------- submit ---------- */
+
+async function submitForm(btn) {
+  const errBox = $("#submitError_" + (SECTIONS.length - 1));
+  errBox.classList.remove("visible");
+  btn.disabled = true;
+  btn.classList.add("loading");
+  $(".btn-text", btn).textContent = "Sending…";
+
+  const payload = {
+    formVersion: CONFIG.FORM_VERSION,
+    submittedAt: new Date().toISOString(),
+    page: location.href,
+    hp: $("#hpField").value,          // honeypot — should always be empty
+    answers: state.answers,
+    files: state.files.map(f => ({
+      questionId: f.questionId, name: f.name, mimeType: f.mimeType, data: f.data
+    }))
+  };
+
+  try {
+    if (!CONFIG.ENDPOINT || CONFIG.ENDPOINT.indexOf("PASTE_") === 0) {
+      throw new Error("This form isn't connected to a backend yet (CONFIG.ENDPOINT is a placeholder).");
+    }
+    // Content-Type text/plain keeps this a "simple" CORS request (no preflight),
+    // which is the standard workaround for Google Apps Script web apps.
+    const res = await fetch(CONFIG.ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    });
+    if (!res.ok) throw new Error("The server replied with status " + res.status + ".");
+    let out = null;
+    try { out = await res.json(); } catch (e) { /* non-JSON reply but 2xx — treat as success */ }
+    if (out && out.status === "error") {
+      throw new Error(out.message || "Something went wrong saving your response.");
+    }
+    showScreen(SECTIONS.length); // success
+  } catch (err) {
+    errBox.innerHTML =
+      "<b>That didn't go through.</b>" +
+      esc(err.message || "Unknown error.") +
+      " Your answers are still here — please try submitting again. If it keeps failing, check your connection.";
+    errBox.classList.add("visible");
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    $(".btn-text", btn).textContent = "Try again ✓";
+  }
+}
+
+/* ---------- events ---------- */
+
+function wireEvents() {
+  $("#startBtn").addEventListener("click", () => showScreen(0));
+
+  // nav buttons
+  $$("#formScreens .screen").forEach((screenEl, idx) => {
+    $('[data-nav="back"]', screenEl).addEventListener("click", () => {
+      showScreen(idx - 1); // idx 0 → -1 = intro
+    });
+    $('[data-nav="next"]', screenEl).addEventListener("click", ev => {
+      if (!validateSection(idx)) return;
+      if (idx === SECTIONS.length - 1) {
+        submitForm(ev.currentTarget);
+      } else {
+        showScreen(idx + 1);
+      }
+    });
+  });
+
+  // radio / checkbox visual state + "Other" reveal
+  document.addEventListener("change", ev => {
+    const input = ev.target;
+    if (!input.matches('.opt input')) return;
+    if (input.type === "radio") {
+      $$('input[name="' + input.name + '"]').forEach(el =>
+        el.closest(".opt").classList.toggle("checked", el.checked));
+    } else {
+      input.closest(".opt").classList.toggle("checked", input.checked);
+    }
+    // reveal / hide the "Other" text box
+    const qid = input.name.replace(/^q_/, "");
+    const otherWrap = $("#other_" + qid);
+    if (otherWrap) {
+      const otherChecked = $$('input[name="' + input.name + '"]')
+        .some(el => el.value === OTHER_VALUE && el.checked);
+      otherWrap.hidden = !otherChecked;
+      if (otherChecked && input.value === OTHER_VALUE) $("#otherin_" + qid).focus();
+    }
+    // clear error styling as soon as they interact
+    const qEl = input.closest(".q");
+    if (qEl) qEl.classList.remove("invalid");
+  });
+
+  // clear error styling when typing
+  document.addEventListener("input", ev => {
+    const qEl = ev.target.closest && ev.target.closest(".q");
+    if (qEl) qEl.classList.remove("invalid");
+  });
+
+  // scale buttons
+  document.addEventListener("click", ev => {
+    const btn = ev.target.closest(".scale-btn");
+    if (btn) {
+      $$(".scale-btn", btn.parentElement).forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      btn.closest(".q").classList.remove("invalid");
+      return;
+    }
+    const rm = ev.target.closest(".fremove");
+    if (rm) removeFile(rm.dataset.qid, Number(rm.dataset.idx));
+  });
+
+  // file dropzones
+  QUESTIONS.filter(q => q.type === "file").forEach(q => {
+    const dz = $("#dz_" + q.id);
+    const fi = $("#fi_" + q.id);
+    dz.addEventListener("click", () => fi.click());
+    dz.addEventListener("keydown", ev => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); fi.click(); }
+    });
+    fi.addEventListener("change", () => { addFiles(q.id, fi.files); fi.value = ""; });
+    dz.addEventListener("dragover", ev => { ev.preventDefault(); dz.classList.add("dragover"); });
+    dz.addEventListener("dragleave", () => dz.classList.remove("dragover"));
+    dz.addEventListener("drop", ev => {
+      ev.preventDefault();
+      dz.classList.remove("dragover");
+      if (ev.dataTransfer && ev.dataTransfer.files) addFiles(q.id, ev.dataTransfer.files);
+    });
+  });
+}
+
+buildForm();
+wireEvents();
+updateProgress();
+</script>
+</body>
+</html>
