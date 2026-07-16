@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How do you really work with AI? — NexHelix Research</title>
+<title>How do you really work with AI? · NexHelix Research</title>
 <meta name="description" content="A 5–7 minute survey about how non-coders build with AI. Run by NexHelix.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -240,10 +240,10 @@
 
     <!-- Intro screen -->
     <section class="screen active hero" id="intro">
-      <p class="eyebrow" style="margin-bottom:var(--s-3)">A short research survey</p>
+      <p class="eyebrow" style="margin-bottom:var(--s-3)">A short research survey · 7 min</p>
       <h1>How do you really work with AI?</h1>
       <p class="lead">
-        We're studying how people who don't write code get real work done with AI —
+        We're studying how people who don't write code get real work done with AI:
         the prompts, templates and tricks you've built, and where the tools still let you down.
         Your answers directly shape what we build next.
       </p>
@@ -270,7 +270,7 @@
     <section class="screen" id="successScreen">
       <div class="success-card">
         <div class="tick">✓</div>
-        <h2>Thank you — that's genuinely useful.</h2>
+        <h2>Thank you, that's really useful.</h2>
         <p id="successNote">
           Your response has been recorded. If you offered to chat, we'll be in touch by email soon.
           In the meantime, thank you for helping shape NexHelix.
@@ -278,7 +278,7 @@
       </div>
     </section>
 
-    <!-- honeypot (spam trap) — kept out of sight, real people never fill it -->
+    <!-- honeypot (spam trap): kept out of sight, real people never fill it -->
     <input type="text" id="hpField" name="website" tabindex="-1" autocomplete="off"
            style="position:absolute;left:-9999px;height:1px;width:1px;opacity:0" aria-hidden="true">
   </div>
@@ -292,7 +292,7 @@
 "use strict";
 
 /* =====================================================================
-   CONFIG — the only things you should ever need to touch.
+   CONFIG: the only things you should ever need to touch.
    ===================================================================== */
 const CONFIG = {
   // Paste your deployed Google Apps Script Web App URL here.
@@ -301,32 +301,32 @@ const CONFIG = {
 
   // Bump this every time you change the questions, so you can tell
   // waves of responses apart in the Sheet.
-  FORM_VERSION: "v1.0",
+  FORM_VERSION: "v1.1",
 
   MAX_FILE_MB: 10,     // per file
   MAX_TOTAL_MB: 24     // per submission (base64 inflates ~33%, keep headroom)
 };
 
 /* =====================================================================
-   SECTIONS — one screen each. `scene` picks the pastel badge colour.
+   SECTIONS: one screen each. `scene` picks the pastel badge colour.
    ===================================================================== */
 const SECTIONS = [
   { id: "about",    title: "About you",        scene: "var(--scene-blue)",
     intro: "A little context so we can compare answers across roles." },
   { id: "setup",    title: "Your AI setup",    scene: "var(--scene-purple)",
-    intro: "Which tools you actually use — not which ones you've heard of." },
-  { id: "built",    title: "What you've built", scene: "var(--scene-mint)",
-    intro: "The reusable stuff — prompts, templates, automations — that makes AI work for you." },
+    intro: "Which tools you actually use, not which ones you've heard of." },
   { id: "tools",    title: "Your daily tools", scene: "var(--scene-orange)",
     intro: "Where your work actually lives day to day." },
+  { id: "built",    title: "What you've built", scene: "var(--scene-mint)",
+    intro: "The reusable stuff (prompts, templates, automations) that makes AI work for you." },
   { id: "gap",      title: "The gap",          scene: "var(--scene-pink)",
     intro: "The honest bit: what's still manual, and where AI falls short." },
   { id: "followup", title: "Staying in touch", scene: "var(--scene-blue)",
-    intro: "Optional — but we'd love to go deeper with a few people." }
+    intro: "Optional, but we'd love to go deeper with a few people." }
 ];
 
 /* =====================================================================
-   QUESTIONS — the whole survey is defined here.
+   QUESTIONS: the whole survey is defined here.
    To add / edit / remove a question, change this array and bump
    CONFIG.FORM_VERSION. The backend adds new columns automatically.
 
@@ -362,7 +362,7 @@ const QUESTIONS = [
 
   { id: "technical_self", section: "about", type: "scale", required: true,
     label: "How technical would you say you are?",
-    help: "There's no right answer — we're interested in the whole range.",
+    help: "There's no right answer, we're interested in the whole range.",
     min: 1, max: 5,
     minLabel: "I steer clear of anything technical",
     maxLabel: "I'm comfortable writing code" },
@@ -389,19 +389,20 @@ const QUESTIONS = [
     options: ["Hardly any", "An hour or two", "3–10 hours", "10–20 hours",
               "It's woven through most of my week"] },
 
-  // ---- 3 · What you've built ----
+  // ---- 4 · What you've built ----
   { id: "built_things", section: "built", type: "checkbox", required: true,
     label: "Have you created any reusable things to make AI work better for you?",
     help: "Tick everything you've made, however small or scrappy.",
     options: ["Saved or reusable prompts", "Prompt templates my team uses",
               "Custom instructions / system prompts", "Custom GPTs or Claude Projects",
               "Skills or CLAUDE.md files", "Automations (Zapier, Make, n8n…)",
-              "Small internal tools built with AI", "None of these yet"],
+              "Small internal tools built with AI", "Custom HTML artefacts",
+              "None of these yet"],
     allowOther: true },
 
   { id: "most_useful", section: "built", type: "textarea", required: false,
     label: "Think of the most useful one. What is it, and what does it do for you?",
-    help: "A couple of sentences is plenty — what it's for and how you use it.",
+    help: "A couple of sentences is plenty: what it's for and how you use it.",
     placeholder: "e.g. A prompt that turns messy meeting notes into a client update email…" },
 
   { id: "built_job", section: "built", type: "textarea", required: false,
@@ -410,10 +411,10 @@ const QUESTIONS = [
 
   { id: "file_examples", section: "built", type: "file", required: false,
     label: "Happy to share an example?",
-    help: "Prompts, templates, docs, screenshots — anything you've made. Files are used for NexHelix research only and never shared. Up to 10MB per file.",
+    help: "Prompts, templates, docs, screenshots, anything you've made. Files are used for NexHelix research only and never shared. Up to 10MB per file.",
     accept: ".md,.txt,.pdf,.doc,.docx,.json,.zip,.csv,.png,.jpg,.jpeg,.gif,.webp" },
 
-  // ---- 4 · Your daily tools ----
+  // ---- 3 · Your daily tools ----
   { id: "task_tool", section: "tools", type: "checkbox", required: true,
     label: "Where do your tasks and to-dos live?",
     help: "Tick all that apply.",
@@ -443,31 +444,35 @@ const QUESTIONS = [
   // ---- 5 · The gap ----
   { id: "manual_wish", section: "gap", type: "textarea", required: true,
     label: "What do you still do manually, week after week, that you wish AI just handled?",
-    help: "Be specific — the more mundane, the better.",
+    help: "Be specific: the more mundane, the better.",
     placeholder: "e.g. Copying numbers from invoices into a spreadsheet every Friday…" },
 
   { id: "ai_frustration", section: "gap", type: "textarea", required: false,
     label: "When AI lets you down at work, what does that usually look like?",
     placeholder: "e.g. It doesn't know anything about my company, so I re-explain everything…" },
 
+  { id: "context_lost", section: "gap", type: "textarea", required: false,
+    label: "When you switch between tools, what information or context is not being shared?",
+    placeholder: "e.g. My task list has no idea what was agreed in Slack or what's in the doc…" },
+
   { id: "first_delegate", section: "gap", type: "textarea", required: true,
-    label: "Imagine an AI that could securely see across all your tools — tasks, docs, messages, calendar. What's the first thing you'd hand over to it?",
+    label: "Imagine an AI that could securely see across all your tools (tasks, docs, messages, calendar). What's the first thing you'd hand over to it?",
     placeholder: "The very first job you'd delegate, in your own words." },
 
   // ---- 6 · Staying in touch ----
   { id: "contact_email", section: "followup", type: "email", required: false,
     label: "Your email (optional)",
-    help: "Only used to follow up about this research — nothing else.",
+    help: "Share your email if you'd like to receive a copy of the anonymous results and follow what we're cooking.",
     placeholder: "you@company.com" },
 
   { id: "interview_ok", section: "followup", type: "radio", required: true,
     label: "Would you be up for a 20-minute chat about how you work with AI?",
     help: "If yes, pop your email in above so we can reach you.",
-    options: ["Yes, happy to chat", "Maybe — email me first", "No thanks"] },
+    options: ["Yes, happy to chat", "Maybe, email me first", "No thanks"] },
 
   { id: "consent", section: "followup", type: "consent", required: true,
     label: "One last thing",
-    consentText: "I'm happy for my answers — and any files I've uploaded — to be stored and used for NexHelix product research.",
+    consentText: "I'm happy for my answers (and any files I've uploaded) to be stored and used for NexHelix product research.",
     help: "Required. You can ask for your data to be deleted at any time." }
 ];
 
@@ -757,7 +762,7 @@ function addFiles(qid, fileList) {
   errEl.textContent = "";
   Array.prototype.forEach.call(fileList, file => {
     if (file.size > CONFIG.MAX_FILE_MB * 1024 * 1024) {
-      errEl.textContent = '"' + file.name + '" is over ' + CONFIG.MAX_FILE_MB + "MB — could you share a smaller version?";
+      errEl.textContent = '"' + file.name + '" is over ' + CONFIG.MAX_FILE_MB + "MB. Could you share a smaller version?";
       return;
     }
     if (totalFileBytes() + file.size > CONFIG.MAX_TOTAL_MB * 1024 * 1024) {
@@ -779,7 +784,7 @@ function addFiles(qid, fileList) {
       });
       renderFileList(qid);
     };
-    reader.onerror = () => { errEl.textContent = 'Couldn\'t read "' + file.name + '" — sorry, try another file?'; };
+    reader.onerror = () => { errEl.textContent = 'Couldn\'t read "' + file.name + '". Sorry, try another file?'; };
     reader.readAsDataURL(file);
   });
 }
@@ -818,7 +823,7 @@ async function submitForm(btn) {
     formVersion: CONFIG.FORM_VERSION,
     submittedAt: new Date().toISOString(),
     page: location.href,
-    hp: $("#hpField").value,          // honeypot — should always be empty
+    hp: $("#hpField").value,          // honeypot, should always be empty
     answers: state.answers,
     files: state.files.map(f => ({
       questionId: f.questionId, name: f.name, mimeType: f.mimeType, data: f.data
@@ -839,7 +844,7 @@ async function submitForm(btn) {
     });
     if (!res.ok) throw new Error("The server replied with status " + res.status + ".");
     let out = null;
-    try { out = await res.json(); } catch (e) { /* non-JSON reply but 2xx — treat as success */ }
+    try { out = await res.json(); } catch (e) { /* non-JSON reply but 2xx: treat as success */ }
     if (out && out.status === "error") {
       throw new Error(out.message || "Something went wrong saving your response.");
     }
@@ -848,7 +853,7 @@ async function submitForm(btn) {
     errBox.innerHTML =
       "<b>That didn't go through.</b>" +
       esc(err.message || "Unknown error.") +
-      " Your answers are still here — please try submitting again. If it keeps failing, check your connection.";
+      " Your answers are still here, please try submitting again. If it keeps failing, check your connection.";
     errBox.classList.add("visible");
     btn.disabled = false;
     btn.classList.remove("loading");
