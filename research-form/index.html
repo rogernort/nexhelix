@@ -81,7 +81,8 @@
   /* ---- Header + progress ---- */
   header.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
   header.top .bar{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .logo{font-weight:var(--fw-bold);letter-spacing:-.02em;font-size:17px}
+  .logo{font-weight:var(--fw-bold);letter-spacing:-.02em;font-size:17px;color:inherit;text-decoration:none}
+  .logo:hover{opacity:.75}
   .logo span{color:var(--text-secondary);font-weight:var(--fw-medium)}
   .progress-label{font-size:13px;color:var(--text-secondary);font-weight:var(--fw-medium)}
   .progress-track{height:3px;background:var(--surface-sunken)}
@@ -260,7 +261,7 @@
 
 <header class="top">
   <div class="wrap bar">
-    <span class="logo">NexHelix <span>· Research</span></span>
+    <a class="logo" id="logoLink" href="." title="Back to the start">NexHelix <span>· Research</span></a>
     <span class="progress-label" id="progressLabel"></span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -1085,6 +1086,13 @@ async function submitForm(btn) {
 
 function wireEvents() {
   $("#startBtn").addEventListener("click", () => showScreen(0));
+
+  // logo takes you back to the start (answers are kept in the draft)
+  $("#logoLink").addEventListener("click", ev => {
+    ev.preventDefault();
+    stopRecording();
+    showScreen(-1);
+  });
 
   // nav buttons
   $$("#formScreens .screen").forEach((screenEl, idx) => {
