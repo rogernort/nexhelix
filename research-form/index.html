@@ -18,7 +18,8 @@
 <meta name="twitter:image" content="https://rogernort.github.io/nexhelix/research-form/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Changa+One&family=Changa:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="13" fill="none" stroke="%230A0B0D" stroke-width="4.5"/><circle cx="24" cy="11" r="4.2" fill="%230A0B0D"/><circle cx="36.4" cy="20" r="4.2" fill="%230A0B0D"/><circle cx="31.6" cy="34.5" r="4.2" fill="%230A0B0D"/><circle cx="16.4" cy="34.5" r="4.2" fill="%230A0B0D"/><circle cx="11.6" cy="20" r="4.2" fill="%230A0B0D"/><circle cx="24" cy="24" r="5" fill="%232E90FA"/></svg>'>
 <style>
   :root{
     --ink:#0A0B0D;
@@ -33,21 +34,23 @@
     --border:#E6E8EB;
     --border-strong:#D2D6DB;
 
-    --scene-blue:#D4E7F7;
-    --scene-pink:#F8DCE8;
-    --scene-orange:#F7DAC2;
-    --scene-purple:#E6DEF6;
-    --scene-mint:#D8EFE4;
+    /* NexHelix aspect tints (brand guidelines) */
+    --tint-person:#E7F1FF;
+    --tint-communication:#ECEEFF;
+    --tint-tasks:#F1ECFF;
+    --tint-context:#E4F9F2;
+    --tint-ai:#FFF6E1;
+    --tint-automations:#FFEEE9;
 
-    --accent:#F2A65A;
-    --accent-strong:#E07B39;
+    --heart:#2E90FA;
 
     --success:#1F9D63;
     --danger:#D14343;
 
     --r-sm:8px;
     --r-md:14px;
-    --r-lg:24px;
+    --r-lg:20px;
+    --r-xl:28px;
     --r-pill:999px;
 
     --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px;
@@ -57,6 +60,8 @@
     --shadow-md:0 8px 24px rgba(10,11,13,.08);
 
     --font-sans:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    --font-display:"Changa One",var(--font-sans);
+    --font-title:"Changa",var(--font-sans);
     --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
 
     --ease:cubic-bezier(.22,.61,.36,1);
@@ -81,12 +86,13 @@
   /* ---- Header + progress ---- */
   header.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
   header.top .bar{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .logo{font-weight:var(--fw-bold);letter-spacing:-.02em;font-size:17px;color:inherit;text-decoration:none}
+  .logo{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:400;letter-spacing:.01em;font-size:19px;color:inherit;text-decoration:none}
   .logo:hover{opacity:.75}
-  .logo span{color:var(--text-secondary);font-weight:var(--fw-medium)}
+  .logo svg{width:22px;height:22px;flex:none}
+  .logo span{color:var(--text-secondary);font-family:var(--font-sans);font-weight:var(--fw-medium);font-size:16px}
   .progress-label{font-size:13px;color:var(--text-secondary);font-weight:var(--fw-medium)}
   .progress-track{height:3px;background:var(--surface-sunken)}
-  .progress-fill{height:100%;width:0%;background:var(--ink);transition:width var(--dur) var(--ease)}
+  .progress-fill{height:100%;width:0%;background:var(--heart);transition:width var(--dur) var(--ease)}
 
   main{padding:var(--s-7) 0 var(--s-9)}
 
@@ -96,22 +102,22 @@
   @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
   /* ---- Intro ---- */
-  .hero h1{font-size:clamp(34px,6vw,54px);font-weight:var(--fw-bold);line-height:1.05;letter-spacing:-.02em;max-width:16ch}
+  .hero h1{font-family:var(--font-display);font-size:clamp(36px,6vw,56px);font-weight:400;line-height:1.05;letter-spacing:.005em;max-width:16ch}
   .hero .lead{margin-top:var(--s-4);max-width:56ch}
   .hero-meta{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-5)}
   .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-muted);border:1px solid var(--border);border-radius:var(--r-pill);padding:7px 14px;font-size:13px;font-weight:var(--fw-medium);color:var(--text-secondary)}
-  .hero-note{background:var(--scene-blue);border-radius:var(--r-md);padding:var(--s-4) var(--s-5);font-size:14px;margin-top:var(--s-6)}
+  .hero-note{background:var(--tint-person);border-radius:var(--r-md);padding:var(--s-4) var(--s-5);font-size:14px;margin-top:var(--s-6)}
 
   /* ---- Section head ---- */
   .section-head{margin-bottom:var(--s-6)}
   .section-head .badge{display:inline-block;border-radius:var(--r-pill);padding:6px 14px;font-size:12px;font-weight:var(--fw-semibold);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin-bottom:var(--s-4)}
-  .section-head h2{font-size:clamp(26px,4vw,36px);font-weight:var(--fw-bold);line-height:1.12;letter-spacing:-.018em}
+  .section-head h2{font-family:var(--font-title);font-size:clamp(26px,4vw,34px);font-weight:600;line-height:1.12;letter-spacing:.005em}
   .section-head .lead{margin-top:var(--s-2);font-size:17px}
 
   /* ---- Questions ---- */
   .q{margin-bottom:var(--s-6)}
   .q-label{display:block;font-size:17px;font-weight:var(--fw-semibold);letter-spacing:-.005em;margin-bottom:var(--s-2)}
-  .q-label .req{color:var(--accent-strong);margin-left:2px}
+  .q-label .req{color:var(--heart);margin-left:2px}
   .q-help{font-size:14px;color:var(--text-secondary);margin:-4px 0 var(--s-3)}
   .q-error{display:none;font-size:13.5px;color:var(--danger);font-weight:var(--fw-medium);margin-top:var(--s-2)}
   .q.invalid .q-error{display:block}
@@ -233,11 +239,11 @@
   .submit-error b{display:block;margin-bottom:2px;color:var(--danger)}
 
   /* success */
-  .success-card{border-radius:var(--r-lg);padding:var(--s-7);background:var(--scene-mint)}
-  .success-card h2{font-size:clamp(28px,5vw,42px);font-weight:var(--fw-bold);letter-spacing:-.02em;line-height:1.1}
+  .success-card{border-radius:var(--r-xl);padding:var(--s-7);background:var(--tint-context)}
+  .success-card h2{font-family:var(--font-display);font-size:clamp(28px,5vw,42px);font-weight:400;letter-spacing:.005em;line-height:1.1}
   .success-card p{margin-top:var(--s-3);color:var(--text-secondary);max-width:48ch}
   .success-card .tick{
-    width:52px;height:52px;border-radius:50%;background:var(--ink);color:#fff;
+    width:52px;height:52px;border-radius:50%;background:var(--heart);color:#fff;
     display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:var(--s-5);
   }
   .share-row{
@@ -261,7 +267,7 @@
 
 <header class="top">
   <div class="wrap bar">
-    <a class="logo" id="logoLink" href="." title="Back to the start">NexHelix <span>· Research</span></a>
+    <a class="logo" id="logoLink" href="." title="Back to the start"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="24" cy="24" r="13" fill="none" stroke="#0A0B0D" stroke-width="4.5"/><circle cx="24" cy="11" r="4.2" fill="#0A0B0D"/><circle cx="36.4" cy="20" r="4.2" fill="#0A0B0D"/><circle cx="31.6" cy="34.5" r="4.2" fill="#0A0B0D"/><circle cx="16.4" cy="34.5" r="4.2" fill="#0A0B0D"/><circle cx="11.6" cy="20" r="4.2" fill="#0A0B0D"/><circle cx="24" cy="24" r="5" fill="#2E90FA"/></svg>NexHelix <span>· Research</span></a>
     <span class="progress-label" id="progressLabel"></span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -347,17 +353,17 @@ const CONFIG = {
    SECTIONS: one screen each. `scene` picks the pastel badge colour.
    ===================================================================== */
 const SECTIONS = [
-  { id: "about",    title: "About you",        scene: "var(--scene-blue)",
+  { id: "about",    title: "About you",        scene: "var(--tint-person)",
     intro: "A little context so we can compare answers across roles." },
-  { id: "setup",    title: "Your AI setup",    scene: "var(--scene-purple)",
+  { id: "setup",    title: "Your AI setup",    scene: "var(--tint-ai)",
     intro: "Which tools you actually use, not which ones you've heard of." },
-  { id: "tools",    title: "Your daily tools", scene: "var(--scene-orange)",
+  { id: "tools",    title: "Your daily tools", scene: "var(--tint-tasks)",
     intro: "Where your work actually lives day to day." },
-  { id: "built",    title: "What you've built", scene: "var(--scene-mint)",
+  { id: "built",    title: "What you've built", scene: "var(--tint-context)",
     intro: "The reusable stuff (prompts, templates, automations) that makes AI work for you." },
-  { id: "gap",      title: "The gap",          scene: "var(--scene-pink)",
+  { id: "gap",      title: "The gap",          scene: "var(--tint-automations)",
     intro: "The honest bit: what's still manual, and where AI falls short." },
-  { id: "followup", title: "Staying in touch", scene: "var(--scene-blue)",
+  { id: "followup", title: "Staying in touch", scene: "var(--tint-communication)",
     intro: "Optional, but we'd love to go deeper with a few people." }
 ];
 
