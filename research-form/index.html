@@ -345,7 +345,7 @@ const CONFIG = {
 
   // Bump this every time you change the questions, so you can tell
   // waves of responses apart in the Sheet.
-  FORM_VERSION: "v1.3",
+  FORM_VERSION: "v1.4",
 
   MAX_FILE_MB: 10,     // per file
   MAX_TOTAL_MB: 24     // per submission (base64 inflates ~33%, keep headroom)
@@ -429,6 +429,10 @@ const QUESTIONS = [
     options: ["Hardly any", "An hour or two", "3–10 hours", "10–20 hours",
               "It's woven through most of my week"] },
 
+  { id: "ai_organisation", section: "setup", type: "textarea", required: true,
+    label: "How do you organise your AI work today?",
+    placeholder: "e.g. one long chat, a Claude Project per client, folders of prompts, a Notion hub…" },
+
   // ---- 4 · What you've built ----
   { id: "built_things", section: "built", type: "checkbox", required: true,
     label: "Have you created any reusable things to make AI work better for you?",
@@ -493,17 +497,21 @@ const QUESTIONS = [
     help: "Be specific: the more mundane, the better.",
     placeholder: "e.g. Copying numbers from invoices into a spreadsheet every Friday…" },
 
+  { id: "manual_time", section: "gap", type: "radio", required: true,
+    label: "Roughly how much time does that eat in a typical week?",
+    options: ["Under an hour", "1–3 hours", "3–8 hours", "More than 8 hours"] },
+
   { id: "ai_frustration", section: "gap", type: "textarea", required: false,
     label: "When AI lets you down at work, what does that usually look like?",
     placeholder: "e.g. It doesn't know anything about my company, so I re-explain everything…" },
 
-  { id: "context_lost", section: "gap", type: "textarea", required: false,
-    label: "When you switch between tools, what information or context is not being shared?",
-    placeholder: "e.g. My task list has no idea what was agreed in Slack or what's in the doc…" },
+  { id: "direct_tool_loss", section: "gap", type: "textarea", required: false,
+    label: "What do you get from using a specific tool directly, that you lose when doing the same task through AI?",
+    placeholder: "e.g. In my task board I see everything at a glance; through AI I have to ask…" },
 
-  { id: "first_delegate", section: "gap", type: "textarea", required: true,
-    label: "Imagine an AI that could securely see across all your tools (tasks, docs, messages, calendar). What's the first thing you'd hand over to it?",
-    placeholder: "The very first job you'd delegate, in your own words." },
+  { id: "held_back_task", section: "gap", type: "textarea", required: true,
+    label: "What's the last task you wanted to hand to AI but didn't? What stopped you?",
+    placeholder: "The task, and the reason you held it back." },
 
   // ---- 6 · Staying in touch ----
   { id: "contact_name", section: "followup", type: "text", required: false,
