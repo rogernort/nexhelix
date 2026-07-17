@@ -107,6 +107,7 @@
   .hero-meta{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-5)}
   .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface-muted);border:1px solid var(--border);border-radius:var(--r-pill);padding:7px 14px;font-size:13px;font-weight:var(--fw-medium);color:var(--text-secondary)}
   .hero-note{background:var(--tint-person);border-radius:var(--r-md);padding:var(--s-4) var(--s-5);font-size:14px;margin-top:var(--s-6)}
+  .hero-note a,.q-help a{color:var(--heart);font-weight:var(--fw-medium)}
 
   /* ---- Section head ---- */
   .section-head{margin-bottom:var(--s-6)}
@@ -293,7 +294,8 @@
       <div class="hero-note">
         <b>How we use this.</b> Responses are used for NexHelix product research only.
         They're never shared or published in a way that identifies you, and you can ask
-        for your data to be deleted at any time.
+        for your data to be deleted at any time: email
+        <a href="mailto:rogernort@gmail.com">rogernort@gmail.com</a>.
       </div>
       <div class="nav-row" style="margin-top:var(--s-6)">
         <span class="spacer"></span>
@@ -517,7 +519,7 @@ const QUESTIONS = [
   { id: "consent", section: "followup", type: "consent", required: true,
     label: "One last thing",
     consentText: "I'm happy for my answers (and any files I've uploaded) to be stored and used for NexHelix product research.",
-    help: "Required. You can ask for your data to be deleted at any time." }
+    helpHtml: 'Required. You can ask for your data to be deleted at any time: email <a href="mailto:rogernort@gmail.com">rogernort@gmail.com</a>.' }
 ];
 
 /* =====================================================================
@@ -646,7 +648,8 @@ function questionHTML(q) {
             ? 'for="in_' + esc(q.id) + '"' : "") + ">" +
           esc(q.label) + (q.required ? '<span class="req">*</span>' : "") + "</label>"
         : "") +
-      (q.help ? '<p class="q-help">' + esc(q.help) + "</p>" : "") +
+      (q.helpHtml ? '<p class="q-help">' + q.helpHtml + "</p>"
+        : q.help ? '<p class="q-help">' + esc(q.help) + "</p>" : "") +
       controlHTML(q) +
       '<p class="q-error"></p>' +
     "</div>"
