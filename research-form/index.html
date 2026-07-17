@@ -345,7 +345,7 @@ const CONFIG = {
 
   // Bump this every time you change the questions, so you can tell
   // waves of responses apart in the Sheet.
-  FORM_VERSION: "v1.2",
+  FORM_VERSION: "v1.3",
 
   MAX_FILE_MB: 10,     // per file
   MAX_TOTAL_MB: 24     // per submission (base64 inflates ~33%, keep headroom)
@@ -506,6 +506,10 @@ const QUESTIONS = [
     placeholder: "The very first job you'd delegate, in your own words." },
 
   // ---- 6 · Staying in touch ----
+  { id: "contact_name", section: "followup", type: "text", required: false,
+    label: "Your name (optional)",
+    placeholder: "e.g. Sam Njoroge" },
+
   { id: "contact_email", section: "followup", type: "email", required: false,
     label: "Your email (optional)",
     help: "Share your email if you'd like to receive a copy of the anonymous results and follow what we're cooking.",
