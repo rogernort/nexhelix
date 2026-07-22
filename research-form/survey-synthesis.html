@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How non-coders build with AI — Survey synthesis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa+One&family=Changa:wght@600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0B0D; --body:#5B5F66; --subtle:#8A8F98; --border:#E6E8EB;
+    --surface:#F5F6F7; --white:#FFFFFF;
+    --person:#2E90FA;  --person-t:#E7F1FF;
+    --comms:#6E7BFF;   --comms-t:#ECEEFF;
+    --tasks:#9C86FF;   --tasks-t:#F1ECFF;
+    --context:#3ED9B0; --context-t:#E4F9F2;
+    --ai:#FFC24D;      --ai-t:#FFF6E1;
+    --auto:#FF8F7E;    --auto-t:#FFEEE9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.55;color:var(--ink);background:var(--white)}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+  section{padding:104px 0}
+
+  .label{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--subtle)}
+  h1{font-family:'Changa One',sans-serif;font-weight:400;font-size:52px;line-height:1.08;margin:12px 0 16px}
+  h2{font-family:'Changa',sans-serif;font-weight:600;font-size:34px;line-height:1.15;margin:8px 0 12px}
+  h3{font-family:'Inter',sans-serif;font-weight:600;font-size:22px;margin:0 0 8px}
+  p{color:var(--body);margin-bottom:16px}
+  p.lede{font-size:19px}
+  strong{color:var(--ink)}
+
+  /* header */
+  header{padding:32px 0 0}
+  .mark{display:flex;align-items:center;gap:12px}
+
+  /* stat band */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:40px}
+  .stat{background:var(--surface);border-radius:20px;padding:32px 24px}
+  .stat .num{font-family:'Changa One',sans-serif;font-size:44px;line-height:1;color:var(--ink)}
+  .stat .num em{font-style:normal;color:var(--person)}
+  .stat .cap{font-size:14px;color:var(--body);margin-top:8px;line-height:1.4}
+
+  /* section chips */
+  .chip{display:inline-block;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:8px}
+  .chip.tasks{background:var(--tasks-t);color:#6a4fe0}
+  .chip.comms{background:var(--comms-t);color:#4d5ae8}
+  .chip.context{background:var(--context-t);color:#0f9e78}
+  .chip.auto{background:var(--auto-t);color:#e05a44}
+  .chip.ai{background:var(--ai-t);color:#c78a12}
+  .chip.person{background:var(--person-t);color:#1670d6}
+
+  /* bar charts */
+  .chart{margin:24px 0}
+  .bar-row{display:grid;grid-template-columns:210px 1fr 36px;align-items:center;gap:12px;margin-bottom:10px}
+  .bar-row .name{font-size:15px;font-weight:600;color:var(--ink);text-align:right}
+  .bar-track{background:var(--surface);border-radius:8px;height:26px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:8px}
+  .bar-row .val{font-size:14px;font-weight:700;color:var(--subtle)}
+  .chart-note{font-size:13px;color:var(--subtle)}
+
+  /* quote cards */
+  .quotes{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:24px 0}
+  .quote{border:1px solid var(--border);border-radius:20px;padding:32px;background:var(--white)}
+  .quote.tint-context{background:var(--context-t);border-color:transparent}
+  .quote.tint-auto{background:var(--auto-t);border-color:transparent}
+  .quote.tint-ai{background:var(--ai-t);border-color:transparent}
+  .quote.tint-person{background:var(--person-t);border-color:transparent}
+  .quote.tint-tasks{background:var(--tasks-t);border-color:transparent}
+  .quote.wide{grid-column:1 / -1}
+  .quote blockquote{font-size:17px;color:var(--ink);line-height:1.5}
+  .quote blockquote::before{content:"\201C";font-family:'Changa One',sans-serif;font-size:34px;line-height:0;vertical-align:-10px;margin-right:4px;color:var(--subtle)}
+  .quote .who{margin-top:14px;font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--subtle)}
+
+  /* theme header */
+  .theme-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .prev{font-size:14px;font-weight:600;color:var(--subtle)}
+  .implication{border-left:4px solid var(--ink);padding:8px 0 8px 20px;margin:24px 0 0}
+  .implication p{margin:0;color:var(--ink);font-weight:600}
+  .implication .label{display:block;margin-bottom:4px}
+
+  /* distribution blocks */
+  .dist{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin:24px 0 8px}
+  .dist .cell{height:64px;border-radius:8px;background:var(--tasks-t);position:relative}
+  .dist .cell.h2{background:var(--tasks);opacity:.45}
+  .dist .cell.h3{background:var(--tasks);opacity:.75}
+  .dist .cell.h4{background:var(--tasks)}
+  .dist-legend{display:flex;gap:24px;font-size:13px;color:var(--subtle);flex-wrap:wrap}
+
+  /* stack rows */
+  .stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+  .card{background:var(--surface);border-radius:20px;padding:32px}
+  .card h3{font-size:18px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .pill{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600}
+  .pill b{color:var(--person);margin-left:4px}
+
+  /* pointer cards */
+  .points{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:24px}
+  .point{border:1px solid var(--border);border-radius:20px;padding:32px}
+  .point .n{font-family:'Changa One',sans-serif;font-size:28px;color:var(--person)}
+  .point h3{font-size:18px;margin-top:8px}
+  .point p{font-size:15px;margin:0}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:15px;margin-top:16px}
+  th{text-align:left;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--subtle);padding:10px 12px;border-bottom:2px solid var(--border)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--body)}
+  td:first-child{font-weight:700;color:var(--ink)}
+
+  .divider{border:none;border-top:1px solid var(--border)}
+  footer{padding:40px 0 64px;font-size:14px;color:var(--subtle)}
+
+  /* top bar + CTA */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .cta{display:inline-block;background:var(--person);color:var(--white);font-weight:600;font-size:15px;text-decoration:none;padding:12px 24px;border-radius:14px}
+  .cta:hover{background:#1670d6}
+  .cta-band{background:var(--surface);border-radius:28px;padding:64px 32px;text-align:center;margin:64px 0 0}
+  .cta-band h2{margin-bottom:8px}
+  .cta-band p{max-width:520px;margin:0 auto 24px}
+
+  /* password gate */
+  body.locked{overflow:hidden}
+  body.locked > *:not(#gate){display:none}
+  #gate{position:fixed;inset:0;background:var(--white);z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+  body.locked #gate{display:flex}
+  .gate-card{background:var(--surface);border-radius:28px;padding:64px 48px;max-width:420px;width:100%;text-align:center}
+  .gate-card h2{font-size:28px}
+  .gate-card p{font-size:15px}
+  .gate-card input{width:100%;padding:14px 16px;font-size:17px;font-family:'Inter',sans-serif;border:1px solid var(--border);border-radius:14px;margin-bottom:12px;text-align:center;background:var(--white)}
+  .gate-card input:focus{outline:2px solid var(--person);border-color:transparent}
+  .gate-card button{width:100%;background:var(--person);color:var(--white);font-weight:600;font-size:16px;font-family:'Inter',sans-serif;border:none;padding:14px;border-radius:14px;cursor:pointer}
+  .gate-card button:hover{background:#1670d6}
+  .gate-err{color:#e05a44;font-size:14px;font-weight:600;margin-top:12px;min-height:20px}
+
+  @media (max-width:760px){
+    h1{font-size:38px}
+    section{padding:72px 0}
+    .stats{grid-template-columns:1fr 1fr}
+    .quotes,.stack-grid{grid-template-columns:1fr}
+    .points{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:120px 1fr 30px}
+    .bar-row .name{font-size:13px}
+    .dist{grid-template-columns:repeat(4,1fr)}
+  }
+</style>
+</head>
+<body class="locked">
+
+<div id="gate">
+  <div class="gate-card">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true" style="margin-bottom:16px">
+      <circle cx="24" cy="24" r="15" stroke="#0A0B0D" stroke-width="2"/>
+      <circle cx="24" cy="9" r="3.2" fill="#0A0B0D"/>
+      <circle cx="38.27" cy="19.36" r="3.2" fill="#0A0B0D"/>
+      <circle cx="32.82" cy="36.14" r="3.2" fill="#0A0B0D"/>
+      <circle cx="15.18" cy="36.14" r="3.2" fill="#0A0B0D"/>
+      <circle cx="9.73" cy="19.36" r="3.2" fill="#0A0B0D"/>
+      <circle cx="24" cy="24" r="3.6" fill="#2E90FA"/>
+    </svg>
+    <h2 style="font-family:'Changa',sans-serif;font-weight:600">Survey synthesis</h2>
+    <p>This page is password protected. Enter the password to read the findings.</p>
+    <form id="gate-form">
+      <input type="password" id="gate-pass" placeholder="Password" autocomplete="off" autofocus>
+      <button type="submit">Reveal the page</button>
+      <div class="gate-err" id="gate-err"></div>
+    </form>
+  </div>
+</div>
+
+<header class="wrap">
+  <div class="topbar">
+  <div class="mark">
+    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="15" stroke="#0A0B0D" stroke-width="2"/>
+      <circle cx="24" cy="9" r="3.2" fill="#0A0B0D"/>
+      <circle cx="38.27" cy="19.36" r="3.2" fill="#0A0B0D"/>
+      <circle cx="32.82" cy="36.14" r="3.2" fill="#0A0B0D"/>
+      <circle cx="15.18" cy="36.14" r="3.2" fill="#0A0B0D"/>
+      <circle cx="9.73" cy="19.36" r="3.2" fill="#0A0B0D"/>
+      <circle cx="24" cy="24" r="3.6" fill="#2E90FA"/>
+    </svg>
+    <span class="label">Survey synthesis · 11 responses · 17–21 July 2026</span>
+  </div>
+  <a class="cta" href="index.html">Take the survey</a>
+  </div>
+  <h1>How non-coders<br>build with AI</h1>
+  <p class="lede" style="max-width:680px">These people don't just dip into AI; it runs through their whole week. The hard part now is at the edges: getting information in, and getting results back out into the tools where work actually happens.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num"><em>9</em>/11</div><div class="cap">say AI is "woven through most of my week"</div></div>
+    <div class="stat"><div class="num"><em>10</em>/11</div><div class="cap">keep their own skills or CLAUDE.md context files</div></div>
+    <div class="stat"><div class="num"><em>7</em>/8</div><div class="cap">still lose 1+ hours a week to tasks they wish AI could do</div></div>
+    <div class="stat"><div class="num"><em>9</em>/11</div><div class="cap">said yes to a follow-up interview</div></div>
+  </div>
+</header>
+
+<section class="wrap">
+  <span class="chip tasks">Where time goes</span>
+  <h2>Everyone uses AI a lot. Hours still slip away.</h2>
+  <p style="max-width:680px">We asked 8 people how much time they still spend each week on tasks they wish AI could do. 7 lose an hour or more. 3 lose three hours or more. One loses more than eight.</p>
+
+  <div class="dist" aria-hidden="true">
+    <div class="cell h2"></div>
+    <div class="cell h3"></div><div class="cell h3"></div><div class="cell h3"></div><div class="cell h3"></div>
+    <div class="cell h4"></div><div class="cell h4"></div>
+    <div class="cell" style="background:var(--ink)"></div>
+  </div>
+  <div class="dist-legend">
+    <span>■ Under 1 hr (1)</span><span>■ 1–3 hrs (4)</span><span>■ 3–8 hrs (2)</span><span>■ 8+ hrs (1)</span>
+    <span style="margin-left:auto">Hours per week still spent manually, one block per respondent (n=8)</span>
+  </div>
+
+  <div class="quotes">
+    <div class="quote wide tint-tasks">
+      <blockquote>It's failing me most on planning a roadmap based off of 400 requests from CS and Sales + over 10,000 open Jira tickets - so it's a LOT of manual work, which I wish AI would just "get"</blockquote>
+      <div class="who">R8 · Principal Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>Our planning is still very manual. It's very difficult to get all of the context and information from all of the different places and turn it into objectives using AI only.</blockquote>
+      <div class="who">R11 · Senior Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>Summarise my crazy email triage process and help me focus on the most important things.</blockquote>
+      <div class="who">R1 · Community &amp; Systems Strategist, on their most useful build</div>
+    </div>
+  </div>
+  <p>The same time-wasters come up again and again: planning and deciding what to do first, writing reports, sorting email and messages, admin jobs (invoices, scheduling, contracts), and moving data between tools by hand.</p>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <span class="chip comms">The tool stack</span>
+  <h2>Everyone uses the same few AI tools. Their work tools are all over the place.</h2>
+
+  <div class="chart">
+    <div class="label" style="margin-bottom:12px">AI tools used at least weekly (n=11)</div>
+    <div class="bar-row"><span class="name">Claude Code</span><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--person)"></div></div><span class="val">9</span></div>
+    <div class="bar-row"><span class="name">Cowork</span><div class="bar-track"><div class="bar-fill" style="width:73%;background:var(--person)"></div></div><span class="val">8</span></div>
+    <div class="bar-row"><span class="name">Claude (chat app)</span><div class="bar-track"><div class="bar-fill" style="width:64%;background:var(--person)"></div></div><span class="val">7</span></div>
+    <div class="bar-row"><span class="name">ChatGPT</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--comms)"></div></div><span class="val">5</span></div>
+    <div class="bar-row"><span class="name">Gemini</span><div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--comms)"></div></div><span class="val">4</span></div>
+    <div class="bar-row"><span class="name">Notion AI</span><div class="bar-track"><div class="bar-fill" style="width:27%;background:var(--comms)"></div></div><span class="val">3</span></div>
+    <div class="bar-row"><span class="name">Perplexity</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--comms)"></div></div><span class="val">2</span></div>
+    <p class="chart-note">Used by one person each: Cursor, Granola, Wispr Flow, Base44, Claude Design, Devin, Codex and self-built tools.</p>
+  </div>
+
+  <div class="chart">
+    <div class="label" style="margin-bottom:12px">Where tasks and to-dos live (n=11, multi-select)</div>
+    <div class="bar-row"><span class="name">Email inbox</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--tasks)"></div></div><span class="val">5</span></div>
+    <div class="bar-row"><span class="name">Jira</span><div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--tasks)"></div></div><span class="val">4</span></div>
+    <div class="bar-row"><span class="name">Notion</span><div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--tasks)"></div></div><span class="val">4</span></div>
+    <div class="bar-row"><span class="name">Paper / notebook</span><div class="bar-track"><div class="bar-fill" style="width:36%;background:var(--tasks)"></div></div><span class="val">4</span></div>
+    <div class="bar-row"><span class="name">Asana</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--tasks)"></div></div><span class="val">2</span></div>
+    <div class="bar-row"><span class="name">"Mostly in my head"</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--tasks)"></div></div><span class="val">2</span></div>
+    <p class="chart-note">Plus Linear, Coda, a to-do app, spreadsheets and one self-built tool. Most people ticked three or more places.</p>
+  </div>
+
+  <div class="stack-grid">
+    <div class="card">
+      <h3>Docs mostly live in one place. Chat doesn't.</h3>
+      <div class="pillrow">
+        <span class="pill">Google Drive<b>7</b></span><span class="pill">Notion<b>4</b></span><span class="pill">Confluence<b>2</b></span><span class="pill">Local files<b>2</b></span>
+      </div>
+      <div class="pillrow">
+        <span class="pill">Slack<b>7</b></span><span class="pill">WhatsApp<b>3</b></span><span class="pill">Google Chat<b>1</b></span>
+      </div>
+      <div class="pillrow">
+        <span class="pill">Google Calendar<b>10</b></span><span class="pill">Notion Calendar<b>1</b></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>The switching that hurts</h3>
+      <p style="font-size:15px;margin:0">It isn't between AI tools. It's between AI and the tools where work is stored: Jira, Confluence, Drive, Miro, analytics. Task lists are the most scattered of all.</p>
+      <div class="pillrow"><span class="pill">"Jira for devs, but also a todo list in my monster folder" — R8</span></div>
+      <div class="pillrow"><span class="pill">"Nothing beats a physical notebook for me" — R11</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <div class="theme-head"><span class="chip context">Theme 1</span><span class="prev">6 of 11 said this directly</span></div>
+  <h2>If a tool isn't connected, its context is lost</h2>
+  <p style="max-width:680px">What gets lost when moving between tools? For connected tools, nothing. For everything else, everything.</p>
+
+  <div class="quotes">
+    <div class="quote tint-context">
+      <blockquote>What a question. Everything that's not connected to Notion or Google?</blockquote>
+      <div class="who">R1 · Community &amp; Systems Strategist</div>
+    </div>
+    <div class="quote tint-context">
+      <blockquote>Everything I guess, if the tool is not linked or connected. I connect as much as I possibly can, if a connection is available.</blockquote>
+      <div class="who">R2 · Founder, Operations</div>
+    </div>
+    <div class="quote wide">
+      <blockquote>context around the thing – whatever I'm not asking AI or it doesn't infer might also be useful gets lost unless I've thought about telling it it's important</blockquote>
+      <div class="who">R7 · CMO</div>
+    </div>
+    <div class="quote">
+      <blockquote>Currently my issue is moving data from some analytics tools without MCP connectors. When you move mix panel user data, you cant filter videos with the csv having the user id with MSclarity and that is so limiting.</blockquote>
+      <div class="who">R3 · Product Designer</div>
+    </div>
+    <div class="quote">
+      <blockquote>Hallucinating. Forgetting context.</blockquote>
+      <div class="who">R6 · Product Consultant, top frustration</div>
+    </div>
+  </div>
+
+  <div class="implication"><span class="label">Implication</span>
+    <p>People aren't describing a prompting problem. They're describing a plumbing problem. What gets lost is the background stuff you didn't think to paste in, and no amount of extra effort brings it back reliably.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <div class="theme-head"><span class="chip auto">Theme 2</span><span class="prev">5 of 11</span></div>
+  <h2>Work gets done twice on the way out</h2>
+  <p style="max-width:680px">AI does the work, then a person has to move it into the right tool by hand, often fixing the format or rebuilding it.</p>
+
+  <div class="quotes">
+    <div class="quote wide tint-auto">
+      <blockquote>I have to manually review every output and place it into Miro boards away from AI to better explain and share with the teams.</blockquote>
+      <div class="who">R11 · Senior Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>Ai is terrible at formatting Confluence or other docs - the markdown appears as normal text, and doesn't render the "#" correctly as an H1</blockquote>
+      <div class="who">R8 · Principal Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>it might be easier and faster to build it myself on Canva with the freedom to do it as I please from a UI/UX perspective</blockquote>
+      <div class="who">R4 · Co-founder &amp; CEO, on giving up on AI for decks</div>
+    </div>
+    <div class="quote">
+      <blockquote>Access to directly edit things on our drive – mostly stopped by policy/security concerns</blockquote>
+      <div class="who">R7 · CMO</div>
+    </div>
+    <div class="quote">
+      <blockquote>Voice to note. I just want to speak to my computer and whatever I want planned into the right tool and place and brought under the attention of the right person.</blockquote>
+      <div class="who">R2 · Founder, on the ideal</div>
+    </div>
+  </div>
+
+  <div class="implication"><span class="label">Implication</span>
+    <p>The last step is where time and trust get lost. Output that lands in the right tool, formatted and ready to edit, is worth more than smarter answers.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <div class="theme-head"><span class="chip ai">Theme 3</span><span class="prev">10 of 11 keep context files · 7 build internal tools · 5 build HTML artefacts</span></div>
+  <h2>Everyone is building their own memory system for AI</h2>
+  <p style="max-width:680px">The systems people describe all solve the same problem: context that sticks around and moves with you.</p>
+
+  <div class="quotes">
+    <div class="quote wide tint-ai">
+      <blockquote>1 massive folder - it has everything in it - personal, work, everything. Tons of routing and rules. Allows me to use it on any platform, at any time, for any reason... and to have a consistent context + personality</blockquote>
+      <div class="who">R8 · Principal Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>Local folders. Cowork interacting. Maintaining context and progress in markdown. Keep moving to new chat to clear context window.</blockquote>
+      <div class="who">R6 · Product Consultant</div>
+    </div>
+    <div class="quote">
+      <blockquote>Claude Code connects with everything, generates zettels to keep context etc</blockquote>
+      <div class="who">R10 · Director of Product</div>
+    </div>
+    <div class="quote">
+      <blockquote>I've got projects for each function in the business and projects for personal stuff too</blockquote>
+      <div class="who">R4 · Co-founder &amp; CEO</div>
+    </div>
+    <div class="quote">
+      <blockquote>I also use Granola to capture transcripts to input into Claude to keep the project context up to date.</blockquote>
+      <div class="who">R9 · Product Owner</div>
+    </div>
+    <div class="quote wide">
+      <blockquote>Hours of time saved doing 3 people's work... AI and tooling enhanced my output by tenfold.</blockquote>
+      <div class="who">R2 · Founder — though what they build doesn't last: "I call them single use tools. None of them has had any longevity in them."</div>
+    </div>
+  </div>
+
+  <div class="implication"><span class="label">Implication</span>
+    <p>People clearly want this: they keep building it themselves, over and over. What's missing is something that lasts, connects to more tools, and is nicer to use than a folder of markdown files.</p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <div class="theme-head"><span class="chip person">Theme 4</span><span class="prev">5 of 11</span></div>
+  <h2>What else gets in the way: rules, cost and trust</h2>
+
+  <div class="quotes">
+    <div class="quote tint-person">
+      <blockquote>it's mostly policies of what we're allowed to give AI access to that's currently the blocker</blockquote>
+      <div class="who">R7 · CMO</div>
+    </div>
+    <div class="quote tint-person">
+      <blockquote>Anything with private client data</blockquote>
+      <div class="who">R6 · Product Consultant, on what stays off-limits</div>
+    </div>
+    <div class="quote">
+      <blockquote>Bulk triaging of support queue. Tokens too expensive</blockquote>
+      <div class="who">R5 · Product Manager</div>
+    </div>
+    <div class="quote">
+      <blockquote>Not completing the task fully and giving half the artefact or using a lot of made up data</blockquote>
+      <div class="who">R4 · Co-founder &amp; CEO, top frustration</div>
+    </div>
+  </div>
+  <p>Cost and usage limits came up three times ("Reaching capacity usage much quicker then expected." — R9; "running out of tokens too fast" — R7). Trust makes it worse: rules in prompts get ignored, and outputs arrive half-finished.</p>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <span class="chip context">What this points to</span>
+  <h2>Three takeaways</h2>
+  <div class="points">
+    <div class="point">
+      <div class="n">01</div>
+      <h3>Connections matter most</h3>
+      <p>Both kinds of loss happen at the edges. The value comes from how many tools connect in, and how well results are written back out, not from smarter answers.</p>
+    </div>
+    <div class="point">
+      <div class="n">02</div>
+      <h3>The DIY builders are the first users</h3>
+      <p>10 of 11 already built their own systems and know where they fall short. They have the problem, the words for it, and setups ready to move over.</p>
+    </div>
+    <div class="point">
+      <div class="n">03</div>
+      <h3>Planning is the #1 unsolved job</h3>
+      <p>The biggest, most-mentioned gap: pulling tickets, requests and notes from many places into a clear plan. It always crosses tools.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <span class="chip comms">Respondents</span>
+  <h2>Who answered</h2>
+  <table>
+    <tr><th>ID</th><th>Role</th><th>ID</th><th>Role</th></tr>
+    <tr><td>R1</td><td>Community Growth &amp; Systems Strategist</td><td>R7</td><td>CMO</td></tr>
+    <tr><td>R2</td><td>Founder, Operations</td><td>R8</td><td>Principal Product Manager</td></tr>
+    <tr><td>R3</td><td>Product Designer</td><td>R9</td><td>Product Owner</td></tr>
+    <tr><td>R4</td><td>Co-founder, CEO, PM</td><td>R10</td><td>Director of Product</td></tr>
+    <tr><td>R5</td><td>Product Manager</td><td>R11</td><td>Senior Product Manager</td></tr>
+    <tr><td>R6</td><td>Product Consultant</td><td></td><td></td></tr>
+  </table>
+</section>
+
+<div class="wrap">
+  <div class="cta-band">
+    <h2>Add your voice</h2>
+    <p>Use AI at work? The survey is still open, and it takes about ten minutes.</p>
+    <a class="cta" href="index.html">Take the survey</a>
+  </div>
+</div>
+
+<footer class="wrap">
+  <p>How we ran it: an online survey with 11 responses (people chose to take part), 17–21 July 2026. Most work in product roles and all are heavy AI users, so this describes early adopters, not the average worker. The form changed between versions, so five questions were answered by 8 people or fewer; each count says how many were asked. Quotes are word for word, typos included; cuts are marked with "...". 9 of 11 said yes to a follow-up interview.</p>
+</footer>
+
+<script>
+(function () {
+  var HASH = '2df4e90a62d88b35ac8f4dc9e97be0246d0219d79a89019416809fa3f2867341';
+  var KEY = 'synthesis-unlocked';
+
+  function unlock() {
+    document.body.classList.remove('locked');
+    try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+  }
+
+  function sha256Hex(text) {
+    var data = new TextEncoder().encode(text);
+    return crypto.subtle.digest('SHA-256', data).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  try { if (sessionStorage.getItem(KEY) === '1') unlock(); } catch (e) {}
+
+  document.getElementById('gate-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var guess = document.getElementById('gate-pass').value.trim().toLowerCase();
+    var err = document.getElementById('gate-err');
+    sha256Hex(guess).then(function (hex) {
+      if (hex === HASH) { unlock(); }
+      else {
+        err.textContent = "That's not it. Try again.";
+        document.getElementById('gate-pass').value = '';
+      }
+    }).catch(function () {
+      err.textContent = 'Your browser blocked the check. Open this page over https.';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
