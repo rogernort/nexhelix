@@ -22,7 +22,7 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Inter',sans-serif;font-size:17px;line-height:1.55;color:var(--ink);background:var(--white)}
   .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
-  section{padding:136px 0}
+  section.wrap{padding:120px 24px}
 
   .label{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--subtle)}
   h1{font-family:'Changa One',sans-serif;font-weight:400;font-size:52px;line-height:1.08;margin:12px 0 16px}
@@ -33,7 +33,7 @@
   strong{color:var(--ink)}
 
   /* header */
-  header{padding:32px 0 0}
+  header.wrap{padding:32px 24px 64px}
   .mark{display:flex;align-items:center;gap:12px}
 
   /* stat band */
@@ -111,7 +111,7 @@
   td:first-child{font-weight:700;color:var(--ink)}
 
   .divider{border:none;border-top:1px solid var(--border)}
-  footer{padding:40px 0 64px;font-size:14px;color:var(--subtle)}
+  footer.wrap{padding:40px 24px 64px;font-size:14px;color:var(--subtle)}
 
   /* top bar + CTA */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
@@ -137,7 +137,7 @@
 
   @media (max-width:760px){
     h1{font-size:38px}
-    section{padding:96px 0}
+    section.wrap{padding:80px 24px}
     .stats{grid-template-columns:1fr 1fr}
     .quotes,.stack-grid{grid-template-columns:1fr}
     .points{grid-template-columns:1fr}
@@ -508,4 +508,4 @@
 </script>
 
 </body>
-                     </html>
+</html>
